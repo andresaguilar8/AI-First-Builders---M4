@@ -21,22 +21,22 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - RF-02: El sistema debe asignar cada gasto creado al mes que el usuario está visualizando en pantalla al momento del alta.
 - RF-03: El sistema debe aceptar únicamente montos mayores a 0 y menores o iguales a $999.999.999.999,99, con hasta 2 decimales, expresados en pesos argentinos (ARS) e ingresados con coma como separador decimal y, opcionalmente, punto como separador de miles.
 - RF-04: Al crear un gasto, el usuario debe poder indicar si se trata de un gasto recurrente o puntual.
-- RF-05: El sistema debe permitir que la fecha de vencimiento de un gasto caiga en el mismo mes al que pertenece el gasto o en un mes posterior, y debe rechazar fechas de vencimiento de meses anteriores.
+- RF-05: El sistema debe permitir que la fecha de vencimiento de un gasto caiga en el mismo mes al que pertenece el gasto o en un mes posterior, y debe rechazar fechas de vencimiento de meses anteriores. La regla aplica al crear y al editar el gasto; en un recurrente, con cualquier alcance de edición y tomando como mes del gasto el mes visualizado.
 
 ### Gastos recurrentes y puntuales
 - RF-06: Un gasto recurrente debe estar disponible automáticamente en los meses siguientes mientras permanezca activo.
-- RF-07: En cada mes proyectado, la fecha de vencimiento de un gasto recurrente debe caer dentro de ese mismo mes, en el mismo día del mes que su fecha de vencimiento vigente; si ese mes no tiene ese día, debe usarse el último día de ese mes.
+- RF-07: En cada mes proyectado, la fecha de vencimiento de un gasto recurrente debe caer dentro de ese mismo mes, en el mismo día del mes que su fecha de vencimiento vigente; si ese mes no tiene ese día, debe usarse el último día de ese mes. Un gasto recurrente sin fecha de vencimiento se proyecta sin fecha de vencimiento.
 - RF-08: Un gasto puntual debe pertenecer únicamente al mes para el cual fue registrado y no debe generarse automáticamente en períodos posteriores.
 
 ### Edición, baja y eliminación
-- RF-09: El sistema debe permitir editar el nombre, descripción, monto, categoría y fecha de vencimiento de un gasto.
+- RF-09: El sistema debe permitir editar el nombre, descripción, monto, categoría y fecha de vencimiento de un gasto. Editar un gasto pagado debe conservar su estado y su fecha de pago, cualquiera sea el campo modificado.
 - RF-10: Al modificar un gasto recurrente, el usuario debe poder elegir entre modificar solamente el gasto del mes visualizado ("Solo este mes") o aplicar el cambio al mes visualizado y a los meses futuros ("Este mes y los siguientes").
-- RF-11: Al aplicar un cambio con "Este mes y los siguientes", el sistema debe sobrescribir los campos editados también en los meses futuros que tengan modificaciones propias, sin alterar su estado de pago.
-- RF-12: El sistema debe permitir cambiar un gasto puntual a recurrente; el gasto debe proyectarse a partir del mes visualizado.
-- RF-13: El sistema debe permitir cambiar un gasto recurrente a puntual; el gasto debe quedar en el mes visualizado, conservar sus registros de los meses anteriores y no mostrarse en los meses posteriores, aunque en esos meses estuviera marcado como pagado; los registros mensuales persistidos de esos meses posteriores deben eliminarse.
+- RF-11: Al aplicar un cambio con "Este mes y los siguientes", el sistema debe sobrescribir, también en los meses futuros que tengan modificaciones propias, solo los campos cuyo valor cambió en esa edición; las demás modificaciones propias de esos meses y su estado de pago deben conservarse.
+- RF-12: El sistema debe permitir cambiar un gasto puntual a recurrente; el gasto debe proyectarse a partir del mes visualizado, conservando su nombre, descripción, monto, categoría y fecha de vencimiento como valores vigentes.
+- RF-13: El sistema debe permitir cambiar un gasto recurrente a puntual: el recurrente termina en el mes anterior al visualizado, conservando sus registros de los meses anteriores, y en el mes visualizado queda un gasto puntual nuevo e independiente con los valores y el estado de pago que el gasto tenía en ese mes. El recurrente no debe mostrarse en los meses posteriores, aunque en esos meses estuviera marcado como pagado; los registros mensuales persistidos de esos meses posteriores deben eliminarse.
 - RF-14: El sistema debe permitir dar de baja un gasto recurrente. A partir de la baja, el gasto no debe mostrarse en el mes visualizado al darlo de baja ni en los meses posteriores, aunque en esos meses estuviera marcado como pagado; los registros mensuales persistidos de esos meses deben eliminarse.
 - RF-15: El sistema debe conservar los registros de los meses anteriores al mes visualizado al dar de baja un gasto recurrente.
-- RF-16: El sistema debe permitir eliminar un gasto puntual.
+- RF-16: El sistema debe permitir eliminar un gasto puntual. La eliminación es definitiva.
 - RF-17: Las modificaciones realizadas sobre un gasto recurrente en un determinado mes no deben alterar el nombre, la descripción, el monto, la fecha de vencimiento, la categoría ni el estado de pago registrados en meses anteriores.
 
 ### Categorías
@@ -54,11 +54,11 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 
 ### Pagos y vencimientos
 - RF-27: El sistema debe permitir marcar un gasto como pagado.
-- RF-28: Al marcar como pagado un gasto que no está en estado Vencido, el sistema debe registrar automáticamente la fecha actual como fecha de pago.
+- RF-28: Al marcar como pagado un gasto que no está en estado Vencido, el sistema debe registrar automáticamente la fecha actual como fecha de pago. Esto incluye los gastos de meses futuros.
 - RF-29: Al marcar como pagado un gasto en estado Vencido, el sistema debe preguntar si la fecha de pago es la fecha actual y, si no lo es, permitir ingresar la fecha real de pago.
 - RF-30: El sistema debe rechazar una fecha de pago posterior a la fecha actual. No existe una fecha de pago mínima: se acepta cualquier fecha hasta la fecha actual inclusive, aun anterior al mes del gasto.
 - RF-31: El sistema debe permitir desmarcar un gasto pagado, que vuelve a quedar pendiente y sin fecha de pago. Si el gasto es recurrente y el pago era la única información específica de ese mes, su registro mensual debe eliminarse (el mes vuelve a tener 0 registros persistidos, RNF-05); si el mes tiene además una modificación "Solo este mes", el registro se conserva sin pago.
-- RF-32: Cada vez que se abre o recarga la aplicación, haya o no que iniciar sesión, el sistema debe mostrar una alerta interna cuando exista al menos un gasto pendiente de pago, de cualquier mes (incluidos los recurrentes solo proyectados del mes actual), cuya fecha de vencimiento coincida con la fecha actual.
+- RF-32: Cada vez que se abre o recarga la aplicación, haya o no que iniciar sesión, el sistema debe mostrar una alerta interna cuando exista al menos un gasto pendiente de pago, de cualquier mes (incluidos los recurrentes solo proyectados del mes actual), cuya fecha de vencimiento coincida con la fecha actual. Los gastos ya vencidos no disparan la alerta; se distinguen por su estado (RF-33).
 - RF-33: Mientras un gasto permanezca pendiente, el sistema debe distinguir visualmente su situación respecto de la fecha de vencimiento:
     - Al día: faltan más de 3 días para su vencimiento o no posee fecha de vencimiento.
     - Próximo a vencer: faltan entre 1 y 3 días.
@@ -74,10 +74,11 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - RF-37: El único usuario del sistema debe crearse mediante un seed; el sistema no debe ofrecer ninguna funcionalidad de registro de usuarios, ni en la interfaz ni en la API.
 
 ### Exportación
-- RF-38: El sistema debe permitir exportar a un archivo CSV el historial de gastos desde el primer mes con al menos un gasto registrado hasta el mes actual inclusive, incluyendo los meses en que un gasto recurrente solo está proyectado.
+- RF-38: El sistema debe permitir exportar a un archivo CSV el historial de gastos desde el primer mes con al menos un gasto registrado hasta el mes actual inclusive, incluyendo los meses en que un gasto recurrente solo está proyectado. Si no hay ningún gasto hasta el mes actual, el archivo contiene solo el encabezado.
 - RF-39: El archivo CSV exportado debe cumplir el siguiente formato:
     - Codificación UTF-8 con BOM; separador coma; campos con comas o comillas entre comillas dobles (RFC 4180).
     - Primera fila de encabezado: `periodo,nombre,monto,categoria,vencimiento,estado,fecha_pago`.
+    - Filas ordenadas por `periodo` ascendente.
     - `periodo` en formato `aaaa-mm`; `vencimiento` y `fecha_pago` en formato `aaaa-mm-dd`, vacíos si no existen.
     - `monto` con punto decimal, 2 decimales y sin separador de miles (ej.: `30000.00`).
     - `categoria` con el valor `Sin categoría` cuando el gasto no tiene categoría.

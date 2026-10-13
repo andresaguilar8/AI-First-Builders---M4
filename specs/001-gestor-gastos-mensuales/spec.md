@@ -24,6 +24,11 @@ PRD.
 - Q: ¿Qué pasa con un registro mensual de un recurrente cuando una operación lo deja sin información propia? → A: Se elimina; un registro se conserva solo mientras tenga un pago o algún campo distinto del valor vigente (regla general que incluye desmarcar y "Este mes y los siguientes").
 - Q: Al dar de baja un recurrente o pasarlo a puntual, ¿qué pasa con los registros guardados de meses posteriores? → A: Se eliminan.
 - Q: ¿Qué gastos disparan la alerta de "vence hoy"? → A: Todo pendiente de cualquier mes cuyo vencimiento es hoy, incluidos los recurrentes solo proyectados del mes actual.
+- Q: Si se edita un gasto que ya está pagado, ¿qué pasa con su estado de pago? → A: Se conservan el estado y la fecha de pago, sin importar qué campo se cambie.
+- Q: En "Este mes y los siguientes", ¿qué se sobrescribe en meses futuros con cambios propios? → A: Solo los campos cuyo valor cambió en esa edición; los demás cambios propios se conservan.
+- Q: ¿La regla de vencimiento no anterior al mes del gasto aplica también al editar? → A: Sí; al crear y al editar, con cualquier alcance.
+- Q: Al pasar a puntual un recurrente con meses anteriores, ¿cómo quedan esos meses y qué es el gasto del mes visualizado? → A: El recurrente termina en el mes anterior (sus meses previos siguen siendo suyos) y en el mes visualizado queda un puntual nuevo e independiente con los valores y el pago de ese mes.
+- Q: ¿Las suposiciones del spec que no están en el PRD pasan al PRD como requisitos explícitos? → A: Sí; se incorporan al texto de los RF correspondientes, sin AC nuevos.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -308,7 +313,9 @@ contenido y formato del archivo.
 - Recurrente cuyo vencimiento cae en el mes siguiente al de alta: en los meses proyectados el
   vencimiento cae dentro del propio mes (AC-11).
 - Edición "Este mes y los siguientes" cuando hay meses futuros con cambios propios o pagos: se
-  sobrescriben los campos editados y se conserva el estado de pago (RF-11, AC-17).
+  sobrescriben solo los campos cuyo valor cambió en esa edición (p. ej., si se cambia solo el
+  monto, una categoría propia de noviembre se conserva) y se conserva el estado de pago (RF-11,
+  AC-17).
 - Baja o paso a puntual de un recurrente ya pagado en el mes visualizado o en meses posteriores:
   esos meses dejan de mostrarlo, no suman a sus totales y sus registros mensuales guardados se
   eliminan (RF-13, RF-14, AC-20, AC-22, AC-65).
@@ -317,6 +324,8 @@ contenido y formato del archivo.
 - Nombres de categoría que difieren solo en mayúsculas o acentos, o que coinciden con "Sin
   categoría": se rechazan (RF-19).
 - Fecha de pago posterior a hoy: se rechaza (RF-30).
+- Edición de un gasto pagado (monto, vencimiento u otro campo): sigue pagado con la misma fecha de
+  pago (RF-09).
 - Desmarcar el pago de un recurrente cuyo único dato propio en el mes era ese pago: se elimina el
   registro mensual y el mes queda con 0 registros de ese gasto (RF-31, RNF-05).
 - Diferencia horaria: entre las 21:00 y las 23:59 de Buenos Aires, la fecha UTC ya es el día
@@ -344,36 +353,45 @@ contenido y formato del archivo.
   punto de miles opcional.
 - **FR-004** (RF-04): El usuario DEBE poder indicar al crear un gasto si es recurrente o puntual.
 - **FR-005** (RF-05): El sistema DEBE aceptar vencimientos en el mes del gasto o en meses
-  posteriores y rechazar vencimientos en meses anteriores.
+  posteriores y rechazar vencimientos en meses anteriores, tanto al crear como al editar (en un
+  recurrente, con cualquier alcance, tomando como mes del gasto el mes visualizado).
 
 **Recurrentes y puntuales**
 
 - **FR-006** (RF-06): Un gasto recurrente DEBE aparecer automáticamente en los meses siguientes
   mientras esté activo.
 - **FR-007** (RF-07): En cada mes proyectado, el vencimiento de un recurrente DEBE caer en ese mes,
-  el mismo día que su vencimiento vigente, o el último día del mes si ese día no existe.
+  el mismo día que su vencimiento vigente, o el último día del mes si ese día no existe. Un
+  recurrente sin vencimiento se proyecta sin vencimiento (su estado es "Al día", FR-033).
 - **FR-008** (RF-08): Un gasto puntual DEBE pertenecer solo a su mes y NO DEBE repetirse en
   períodos posteriores.
 
 **Edición, baja y eliminación**
 
 - **FR-009** (RF-09): El sistema DEBE permitir editar nombre, descripción, monto, categoría y
-  vencimiento de un gasto.
+  vencimiento de un gasto. Editar un gasto pagado DEBE conservar su estado y su fecha de pago,
+  cualquiera sea el campo modificado.
 - **FR-010** (RF-10): Al editar un recurrente, el usuario DEBE elegir entre "Solo este mes" y "Este
   mes y los siguientes".
-- **FR-011** (RF-11): "Este mes y los siguientes" DEBE sobrescribir los campos editados también en
-  meses futuros con cambios propios, sin alterar su estado de pago.
+- **FR-011** (RF-11): "Este mes y los siguientes" DEBE sobrescribir también en meses futuros con
+  cambios propios solo los campos cuyo valor cambió en esa edición; los demás cambios propios de
+  esos meses y su estado de pago DEBEN conservarse.
 - **FR-012** (RF-12): El sistema DEBE permitir pasar un puntual a recurrente, proyectándolo desde
-  el mes visualizado.
-- **FR-013** (RF-13): El sistema DEBE permitir pasar un recurrente a puntual: queda en el mes
-  visualizado, conserva los meses anteriores y deja de mostrarse en los posteriores aunque
-  estuvieran pagados; los registros mensuales guardados de esos meses posteriores DEBEN eliminarse.
+  el mes visualizado y conservando nombre, descripción, monto, categoría y vencimiento como
+  valores vigentes.
+- **FR-013** (RF-13): El sistema DEBE permitir pasar un recurrente a puntual: el recurrente termina
+  en el mes anterior al visualizado (sus meses anteriores se conservan como parte de él) y en el
+  mes visualizado queda un gasto puntual nuevo e independiente, con los valores y el estado de
+  pago que el gasto tenía en ese mes. El recurrente deja de mostrarse en los meses posteriores
+  aunque estuvieran pagados; los registros mensuales guardados de esos meses posteriores DEBEN
+  eliminarse.
 - **FR-014** (RF-14): El sistema DEBE permitir dar de baja un recurrente; desde el mes visualizado
   en adelante NO DEBE mostrarse, aunque estuviera pagado, y sus registros mensuales guardados de
   esos meses DEBEN eliminarse.
 - **FR-015** (RF-15): Al dar de baja un recurrente, el sistema DEBE conservar sus registros de los
   meses anteriores al visualizado.
-- **FR-016** (RF-16): El sistema DEBE permitir eliminar un gasto puntual.
+- **FR-016** (RF-16): El sistema DEBE permitir eliminar un gasto puntual; la eliminación es
+  definitiva.
 - **FR-017** (RF-17): Ninguna modificación de un recurrente hecha en un mes DEBE alterar nombre,
   descripción, monto, vencimiento, categoría ni estado de pago de meses anteriores (la única
   excepción es renombrar o eliminar la categoría en sí, FR-020/FR-021).
@@ -401,7 +419,7 @@ contenido y formato del archivo.
 
 - **FR-027** (RF-27): El sistema DEBE permitir marcar un gasto como pagado.
 - **FR-028** (RF-28): Si el gasto no está Vencido, al marcarlo pagado el sistema DEBE registrar la
-  fecha actual como fecha de pago sin preguntar.
+  fecha actual como fecha de pago sin preguntar, incluso si el gasto es de un mes futuro.
 - **FR-029** (RF-29): Si el gasto está Vencido, el sistema DEBE preguntar si se pagó hoy y, si no,
   permitir ingresar la fecha real.
 - **FR-030** (RF-30): El sistema DEBE rechazar fechas de pago posteriores a la fecha actual; no
@@ -412,7 +430,8 @@ contenido y formato del archivo.
   un cambio "Solo este mes", el registro se conserva sin pago.
 - **FR-032** (RF-32): Cada vez que se abre o recarga la aplicación, con o sin inicio de sesión, el
   sistema DEBE mostrar una alerta si hay al menos un pendiente que vence hoy, de cualquier mes
-  (incluidos los recurrentes solo proyectados del mes actual).
+  (incluidos los recurrentes solo proyectados del mes actual). Los gastos ya vencidos no disparan
+  la alerta; se distinguen por su estado (FR-033).
 - **FR-033** (RF-33): Para cada pendiente, el sistema DEBE mostrar su estado: "Al día" (más de 3
   días o sin vencimiento), "Próximo a vencer" (1 a 3 días), "Vence hoy" o "Vencido".
 
@@ -432,9 +451,10 @@ contenido y formato del archivo.
 
 - **FR-038** (RF-38): El sistema DEBE exportar a CSV el historial desde el primer mes con algún
   gasto hasta el mes actual inclusive, incluyendo los meses en que un recurrente solo está
-  proyectado.
+  proyectado. Si no hay ningún gasto hasta el mes actual, el archivo contiene solo el encabezado.
 - **FR-039** (RF-39): El CSV DEBE estar en UTF-8 con BOM, separado por comas con comillas según
-  RFC 4180, con encabezado `periodo,nombre,monto,categoria,vencimiento,estado,fecha_pago`;
+  RFC 4180, con encabezado `periodo,nombre,monto,categoria,vencimiento,estado,fecha_pago` y filas
+  ordenadas por `periodo` ascendente;
   `periodo` como `aaaa-mm`; fechas como `aaaa-mm-dd` o vacías; `monto` con punto decimal, 2
   decimales y sin separador de miles; `categoria` = `Sin categoría` si no tiene; `estado` =
   `Pagado` o `Pendiente`.
@@ -469,7 +489,8 @@ contenido y formato del archivo.
   exactamente uno.
 - **Gasto**: obligación de pago con nombre, monto, descripción opcional, categoría opcional,
   vencimiento opcional y tipo (puntual o recurrente). Un puntual pertenece a un mes; un recurrente
-  tiene un mes de inicio, está activo hasta su baja o paso a puntual, y tiene valores vigentes
+  tiene un mes de inicio, está activo hasta su baja o paso a puntual (en ese caso su último mes es
+  el anterior al de la conversión, y el mes de la conversión pasa a un puntual nuevo), y tiene valores vigentes
   (nombre, descripción, monto, categoría, vencimiento) que pueden cambiar desde un mes en adelante
   sin afectar los meses anteriores.
 - **Registro mensual de un gasto recurrente**: información propia de un recurrente en un mes
@@ -500,17 +521,6 @@ contenido y formato del archivo.
 
 - La carga inicial del único usuario (email y contraseña) se hace al instalar el sistema, con
   valores provistos por fuera del código.
-- Un recurrente sin vencimiento se proyecta sin vencimiento y su estado es "Al día".
-- Se puede marcar como pagado un gasto de un mes futuro; la fecha de pago registrada es la fecha
-  actual.
-- Pasar un puntual a recurrente conserva sus valores (monto, categoría, vencimiento) como valores
-  vigentes desde el mes visualizado.
-- La eliminación de un gasto puntual es definitiva.
-- Si no hay ningún gasto registrado hasta el mes actual, la exportación contiene solo el
-  encabezado.
-- El orden de las filas del CSV es por período ascendente.
-- La alerta del día solo considera gastos que vencen hoy; los vencidos se distinguen por su estado
-  (RF-33) y no disparan la alerta.
 - Fuera de alcance (según PRD): múltiples usuarios, registro, cierre de sesión, recuperación de
   contraseña, límite o bloqueo por intentos fallidos de inicio de sesión, roles, multimoneda, cuentas bancarias, ingresos, filtros de exportación, instalación
   en Firefox y Safari, uso sin conexión y notificaciones push, por correo o WhatsApp.
