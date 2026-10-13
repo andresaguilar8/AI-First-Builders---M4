@@ -19,7 +19,7 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 ### Alta de gastos
 - RF-01: El sistema debe permitir crear un gasto indicando como mínimo nombre y monto. Opcionalmente se podrá indicar descripción, categoría y fecha de vencimiento.
 - RF-02: El sistema debe asignar cada gasto creado al mes que el usuario está visualizando en pantalla al momento del alta.
-- RF-03: El sistema debe aceptar únicamente montos mayores a 0, con hasta 2 decimales, expresados en pesos argentinos (ARS) e ingresados con coma como separador decimal y, opcionalmente, punto como separador de miles.
+- RF-03: El sistema debe aceptar únicamente montos mayores a 0 y menores o iguales a $999.999.999.999,99, con hasta 2 decimales, expresados en pesos argentinos (ARS) e ingresados con coma como separador decimal y, opcionalmente, punto como separador de miles.
 - RF-04: Al crear un gasto, el usuario debe poder indicar si se trata de un gasto recurrente o puntual.
 - RF-05: El sistema debe permitir que la fecha de vencimiento de un gasto caiga en el mismo mes al que pertenece el gasto o en un mes posterior, y debe rechazar fechas de vencimiento de meses anteriores.
 
@@ -33,11 +33,11 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - RF-10: Al modificar un gasto recurrente, el usuario debe poder elegir entre modificar solamente el gasto del mes visualizado ("Solo este mes") o aplicar el cambio al mes visualizado y a los meses futuros ("Este mes y los siguientes").
 - RF-11: Al aplicar un cambio con "Este mes y los siguientes", el sistema debe sobrescribir los campos editados también en los meses futuros que tengan modificaciones propias, sin alterar su estado de pago.
 - RF-12: El sistema debe permitir cambiar un gasto puntual a recurrente; el gasto debe proyectarse a partir del mes visualizado.
-- RF-13: El sistema debe permitir cambiar un gasto recurrente a puntual; el gasto debe quedar en el mes visualizado, conservar sus registros de los meses anteriores y no mostrarse en los meses posteriores, aunque en esos meses estuviera marcado como pagado.
-- RF-14: El sistema debe permitir dar de baja un gasto recurrente. A partir de la baja, el gasto no debe mostrarse en el mes visualizado al darlo de baja ni en los meses posteriores, aunque en esos meses estuviera marcado como pagado.
+- RF-13: El sistema debe permitir cambiar un gasto recurrente a puntual; el gasto debe quedar en el mes visualizado, conservar sus registros de los meses anteriores y no mostrarse en los meses posteriores, aunque en esos meses estuviera marcado como pagado; los registros mensuales persistidos de esos meses posteriores deben eliminarse.
+- RF-14: El sistema debe permitir dar de baja un gasto recurrente. A partir de la baja, el gasto no debe mostrarse en el mes visualizado al darlo de baja ni en los meses posteriores, aunque en esos meses estuviera marcado como pagado; los registros mensuales persistidos de esos meses deben eliminarse.
 - RF-15: El sistema debe conservar los registros de los meses anteriores al mes visualizado al dar de baja un gasto recurrente.
 - RF-16: El sistema debe permitir eliminar un gasto puntual.
-- RF-17: Las modificaciones realizadas sobre un gasto recurrente en un determinado mes no deben alterar el monto, la fecha de vencimiento, la categoría ni el estado de pago registrados en meses anteriores.
+- RF-17: Las modificaciones realizadas sobre un gasto recurrente en un determinado mes no deben alterar el nombre, la descripción, el monto, la fecha de vencimiento, la categoría ni el estado de pago registrados en meses anteriores.
 
 ### Categorías
 - RF-18: El sistema debe permitir crear categorías de gastos.
@@ -56,9 +56,9 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - RF-27: El sistema debe permitir marcar un gasto como pagado.
 - RF-28: Al marcar como pagado un gasto que no está en estado Vencido, el sistema debe registrar automáticamente la fecha actual como fecha de pago.
 - RF-29: Al marcar como pagado un gasto en estado Vencido, el sistema debe preguntar si la fecha de pago es la fecha actual y, si no lo es, permitir ingresar la fecha real de pago.
-- RF-30: El sistema debe rechazar una fecha de pago posterior a la fecha actual.
-- RF-31: El sistema debe permitir desmarcar un gasto pagado, que vuelve a quedar pendiente y sin fecha de pago.
-- RF-32: Cada vez que se abre o recarga la aplicación, haya o no que iniciar sesión, el sistema debe mostrar una alerta interna cuando exista al menos un gasto pendiente de pago cuya fecha de vencimiento coincida con la fecha actual.
+- RF-30: El sistema debe rechazar una fecha de pago posterior a la fecha actual. No existe una fecha de pago mínima: se acepta cualquier fecha hasta la fecha actual inclusive, aun anterior al mes del gasto.
+- RF-31: El sistema debe permitir desmarcar un gasto pagado, que vuelve a quedar pendiente y sin fecha de pago. Si el gasto es recurrente y el pago era la única información específica de ese mes, su registro mensual debe eliminarse (el mes vuelve a tener 0 registros persistidos, RNF-05); si el mes tiene además una modificación "Solo este mes", el registro se conserva sin pago.
+- RF-32: Cada vez que se abre o recarga la aplicación, haya o no que iniciar sesión, el sistema debe mostrar una alerta interna cuando exista al menos un gasto pendiente de pago, de cualquier mes (incluidos los recurrentes solo proyectados del mes actual), cuya fecha de vencimiento coincida con la fecha actual.
 - RF-33: Mientras un gasto permanezca pendiente, el sistema debe distinguir visualmente su situación respecto de la fecha de vencimiento:
     - Al día: faltan más de 3 días para su vencimiento o no posee fecha de vencimiento.
     - Próximo a vencer: faltan entre 1 y 3 días.
@@ -89,7 +89,7 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - RNF-03: La aplicación debe poder instalarse y ejecutarse como una Progressive Web App (PWA) en las últimas 2 versiones estables de Chrome y Edge de escritorio y de Chrome para Android. En las últimas 2 versiones estables de Firefox de escritorio y Safari de macOS debe poder utilizarse desde el navegador con todas las operaciones de RNF-01, sin requisito de instalación. El acceso y modificación de los datos requerirá conexión a Internet; el funcionamiento offline queda fuera del alcance inicial.
 - RNF-04: Las contraseñas no deben almacenarse en texto plano: deben persistirse utilizando un algoritmo de hash con salt, con un costo equivalente a PBKDF2 con al menos 100.000 iteraciones (mecanismo por defecto de ASP.NET Core Identity) o superior.
 - RNF-05: Los gastos recurrentes no deben pre-generar registros: para todo mes sin información específica de un gasto recurrente, la cantidad de registros mensuales persistidos de ese gasto debe ser 0; el gasto se proyecta al consultar el período.
-- RNF-06: Cuando un gasto recurrente tenga información específica de un mes (una modificación o un pago), debe persistirse exactamente 1 instancia propia de ese gasto para ese mes.
+- RNF-06: Cuando un gasto recurrente tenga información específica de un mes (una modificación o un pago), debe persistirse exactamente 1 instancia propia de ese gasto para ese mes. La instancia se conserva solo mientras tenga información específica (un pago, o al menos un campo con un valor distinto del vigente para ese mes); toda operación que la deje sin información específica (desmarcar el pago, una edición "Este mes y los siguientes" que iguala sus campos a los vigentes, etc.) debe eliminarla.
 - RNF-07: Toda referencia a la fecha actual (alerta de vencimiento, estados de vencimiento, fecha de pago y mes inicial) debe calcularse en la zona horaria America/Argentina/Buenos_Aires (UTC−3).
 - RNF-08: La sesión autenticada debe expirar tras 30 días sin actividad; a partir de ese momento el sistema debe volver a solicitar email y contraseña.
 
@@ -104,6 +104,7 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - AC-06 (RF-03): Dado el formulario de alta, cuando el usuario ingresa como monto 1.234,56, entonces el gasto debe registrarse con un monto de $1.234,56.
 - AC-07 (RF-05): Dado que el usuario visualiza octubre de 2026, cuando crea un gasto con vencimiento 05/11/2026, entonces el gasto debe aparecer en octubre de 2026 con vencimiento 05/11/2026.
 - AC-08 (RF-05): Dado que el usuario visualiza octubre de 2026, cuando intenta crear un gasto con vencimiento 30/09/2026, entonces el sistema debe rechazar el alta y no debe crearse ningún gasto.
+- AC-62 (RF-03): Dado el formulario de alta, cuando el usuario ingresa como monto 999.999.999.999,99, entonces el gasto debe registrarse con ese monto; cuando ingresa 1.000.000.000.000, entonces el sistema debe rechazar el alta.
 
 ### Gastos recurrentes y puntuales
 - AC-09 (RF-06): Dado un gasto recurrente activo, cuando el usuario consulta el mes siguiente, entonces el gasto debe visualizarse en ese período aunque previamente no se haya creado manualmente un gasto para ese mes.
@@ -124,6 +125,9 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - AC-22 (RF-14): Dado un gasto recurrente marcado como pagado en septiembre de 2026, cuando, visualizando septiembre de 2026, el usuario lo da de baja, entonces el gasto no debe aparecer en septiembre de 2026 y el total del mes de septiembre no debe incluir su monto.
 - AC-23 (RF-16): Dado un gasto puntual en octubre, cuando el usuario lo elimina, entonces el gasto no debe aparecer en octubre.
 - AC-24 (RF-17, RF-27): Dado un gasto recurrente de $20.000 que vence el 15/09/2026, cuando, visualizando septiembre, el usuario lo marca como pagado el 10/09/2026, entonces septiembre debe mostrarse como pagado con fecha de pago 10/09/2026 y octubre debe mostrarse pendiente por $20.000.
+- AC-63 (RF-10, RF-17): Dado un gasto recurrente llamado "Internet" con descripción "Plan 100 MB" activo desde agosto de 2026, cuando, visualizando septiembre de 2026, el usuario cambia su nombre a "Fibra" y su descripción a "Plan 300 MB" seleccionando "Este mes y los siguientes", entonces agosto debe continuar mostrando "Internet" y "Plan 100 MB", y septiembre y octubre deben mostrar "Fibra" y "Plan 300 MB".
+- AC-64 (RF-11, RNF-06): Dado un gasto recurrente de $30.000 cuyo monto de noviembre de 2026 fue modificado a $32.000 con "Solo este mes" y que no está pagado en noviembre, cuando, visualizando septiembre de 2026, el usuario cambia el monto a $32.000 seleccionando "Este mes y los siguientes", entonces noviembre debe mostrar $32.000 y la base de datos no debe contener ningún registro mensual de ese gasto para noviembre de 2026.
+- AC-65 (RF-14, RNF-05): Dado un gasto recurrente marcado como pagado en noviembre de 2026, cuando, visualizando octubre de 2026, el usuario lo da de baja, entonces la base de datos no debe contener ningún registro mensual de ese gasto para octubre ni para noviembre de 2026.
 
 ### Categorías
 - AC-25 (RF-18): Dado que el usuario ingresa el nombre de una categoría nueva, cuando confirma su creación, entonces la categoría debe quedar disponible para asociarla a gastos.
@@ -154,6 +158,8 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - AC-46 (RF-33): Dado que la fecha actual es 05/10/2026 y un gasto pendiente vence el 05/10/2026, cuando se visualiza el mes, entonces debe identificarse como "Vence hoy".
 - AC-47 (RF-33): Dado que la fecha actual es 05/10/2026 y un gasto pendiente venció el 04/10/2026, cuando se visualiza el mes, entonces debe identificarse como "Vencido".
 - AC-48 (RF-33, RNF-07): Dado que son las 22:00 del 05/10/2026 en Buenos Aires (01:00 del 06/10/2026 UTC) y un gasto pendiente vence el 05/10/2026, cuando se visualiza el mes, entonces debe identificarse como "Vence hoy".
+- AC-66 (RF-29, RF-30): Dado que la fecha actual es 05/10/2026 y un gasto pendiente de octubre venció el 01/10/2026, cuando el usuario lo marca como pagado, indica que la fecha de pago no es la actual e ingresa 15/08/2026, entonces el gasto debe mostrarse como pagado con fecha de pago 15/08/2026.
+- AC-67 (RF-32): Dado que la fecha actual es 05/10/2026 y un gasto pendiente de septiembre de 2026 vence el 05/10/2026, cuando el usuario abre la aplicación, entonces debe visualizar una alerta indicando que posee al menos un gasto que vence ese día.
 
 ### Navegación
 - AC-49 (RF-34): Dado que el usuario ingresa a la aplicación sin haber navegado previamente a otro período, cuando se carga la vista principal, entonces el sistema debe mostrar los gastos correspondientes al mes y año actuales.
@@ -175,12 +181,14 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 ### Restricciones técnicas
 - AC-60 (RNF-05): Dado un gasto recurrente creado en octubre de 2026 sin modificaciones ni pagos posteriores, cuando el usuario consulta diciembre de 2026, entonces el gasto debe visualizarse en diciembre de 2026 y la base de datos no debe contener ningún registro mensual de ese gasto para noviembre ni para diciembre de 2026.
 - AC-61 (RNF-06): Dado un gasto recurrente sin registro mensual propio en septiembre de 2026, cuando, visualizando septiembre de 2026, el usuario lo marca como pagado y luego modifica su monto con "Solo este mes", entonces la base de datos debe contener exactamente 1 registro mensual de ese gasto para septiembre de 2026.
+- AC-68 (RF-31, RNF-05): Dado un gasto recurrente sin registro mensual propio en septiembre de 2026, cuando, visualizando septiembre de 2026, el usuario lo marca como pagado y luego lo desmarca, entonces el gasto debe mostrarse pendiente y la base de datos no debe contener ningún registro mensual de ese gasto para septiembre de 2026.
 
 ## Fuera de Alcance
 - Gestión de múltiples usuarios.
 - Registro de usuarios desde la aplicación (el único usuario se crea por seed).
 - Cierre de sesión.
 - Recuperación de contraseña.
+- Límite o bloqueo por intentos fallidos de inicio de sesión.
 - Roles y permisos.
 - Multi-tenant.
 - Multimoneda: todos los montos son en ARS.
@@ -199,6 +207,7 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - Riesgo: el servidor o el navegador usan una zona horaria distinta a la de Buenos Aires y los estados de vencimiento, la alerta o la fecha de pago cambian de día → mitigación: calcular la fecha actual explícitamente en America/Argentina/Buenos_Aires (RNF-07) y cubrirlo con AC-48.
 - Riesgo: la instalación como PWA no está soportada de forma estándar en Firefox de escritorio ni en Safari → mitigación: exigir la instalación solo en Chrome, Edge y Chrome para Android, y garantizar el uso completo desde el navegador en Firefox y Safari (RNF-03).
 - Riesgo (aceptado): al no existir cierre de sesión, si la aplicación se abre en un dispositivo ajeno o compartido, ese dispositivo conserva el acceso hasta que la sesión expire → mitigación: usar la aplicación solo en dispositivos propios; la sesión expira tras 30 días sin actividad (RNF-08).
+- Riesgo (aceptado): al no limitarse los intentos fallidos de inicio de sesión, la contraseña queda expuesta a ataques de fuerza bruta → mitigación: usar una contraseña larga y única para el usuario inicial.
 - Dependencia: PostgreSQL para persistencia de los datos.
 - Dependencia: backend desarrollado con ASP.NET Core, Entity Framework Core y .NET.
 - Dependencia: frontend desarrollado con React y TypeScript.
