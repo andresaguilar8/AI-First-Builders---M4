@@ -346,7 +346,9 @@ contenido y formato del archivo.
 **Alta de gastos**
 
 - **FR-001** (RF-01): El sistema DEBE permitir crear un gasto con nombre y monto obligatorios, y
-  descripción, categoría y fecha de vencimiento opcionales.
+  descripción, categoría y fecha de vencimiento opcionales. Nombre hasta 100 caracteres y
+  descripción hasta 500, sin espacios al inicio ni al final; un nombre vacío tras recortarlo se
+  considera no indicado.
 - **FR-002** (RF-02): El sistema DEBE asignar cada gasto nuevo al mes que el usuario está viendo.
 - **FR-003** (RF-03): El sistema DEBE aceptar solo montos mayores a 0 y menores o iguales a
   $999.999.999.999,99, con hasta 2 decimales, en pesos argentinos, ingresados con coma decimal y
@@ -398,7 +400,8 @@ contenido y formato del archivo.
 
 **Categorías**
 
-- **FR-018** (RF-18): El sistema DEBE permitir crear categorías.
+- **FR-018** (RF-18): El sistema DEBE permitir crear categorías, con nombre obligatorio de hasta 50
+  caracteres, sin espacios al inicio ni al final.
 - **FR-019** (RF-19): El sistema DEBE rechazar crear o renombrar una categoría con un nombre ya
   existente o igual a "Sin categoría", sin distinguir mayúsculas, minúsculas ni acentos.
 - **FR-020** (RF-20): El sistema DEBE permitir renombrar una categoría; el nuevo nombre DEBE verse
@@ -454,7 +457,8 @@ contenido y formato del archivo.
   proyectado. Si no hay ningún gasto hasta el mes actual, el archivo contiene solo el encabezado.
 - **FR-039** (RF-39): El CSV DEBE estar en UTF-8 con BOM, separado por comas con comillas según
   RFC 4180, con encabezado `periodo,nombre,monto,categoria,vencimiento,estado,fecha_pago` y filas
-  ordenadas por `periodo` ascendente;
+  ordenadas por `periodo` ascendente y, dentro de un período, por `vencimiento` ascendente (sin
+  vencimiento al final) y luego por `nombre`;
   `periodo` como `aaaa-mm`; fechas como `aaaa-mm-dd` o vacías; `monto` con punto decimal, 2
   decimales y sin separador de miles; `categoria` = `Sin categoría` si no tiene; `estado` =
   `Pagado` o `Pendiente`.

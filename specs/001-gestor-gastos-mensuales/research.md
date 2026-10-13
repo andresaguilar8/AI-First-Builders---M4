@@ -126,14 +126,14 @@ técnicas tomadas dentro de ese stack. Ninguna agrega comportamiento fuera del P
 - **Alternatives considered**: collation ICU no determinística en PostgreSQL (no soporta índices
   únicos con todas las operaciones y complica las migraciones).
 
-## R-10. Límites de texto (decisión técnica a confirmar en el PRD)
+## R-10. Límites de texto (incorporados al PRD en RF-01 y RF-18)
 
 - **Decision**: nombre del gasto ≤ 100 caracteres, descripción ≤ 500, nombre de categoría ≤ 50;
   se recortan los espacios al inicio y al final; un nombre vacío tras recortar se trata como
   ausente (AC-03).
 - **Rationale**: hacen falta para definir columnas y validaciones; los valores son holgados para el
-  uso descrito. Como el PRD no los fija, se registran aquí y conviene incorporarlos al PRD (punto
-  CHK009 del checklist de dominio).
+  uso descrito. Se incorporaron al PRD (RF-01, RF-18) y al spec (FR-001, FR-018), lo que resuelve
+  el punto CHK009 del checklist de dominio.
 
 ## R-11. Frontend
 

@@ -17,7 +17,7 @@
   comillas internas se duplican.
 - Encabezado exacto: `periodo,nombre,monto,categoria,vencimiento,estado,fecha_pago`.
 - Filas ordenadas por `periodo` ascendente; dentro de un período, por `vencimiento` ascendente
-  (vacíos al final) y luego por `nombre`.
+  (vacíos al final) y luego por `nombre` (RF-39).
 
 | Columna | Formato | Origen |
 |---|---|---|

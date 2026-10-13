@@ -17,7 +17,7 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 ## Requerimientos Funcionales
 
 ### Alta de gastos
-- RF-01: El sistema debe permitir crear un gasto indicando como mínimo nombre y monto. Opcionalmente se podrá indicar descripción, categoría y fecha de vencimiento.
+- RF-01: El sistema debe permitir crear un gasto indicando como mínimo nombre y monto. Opcionalmente se podrá indicar descripción, categoría y fecha de vencimiento. El nombre admite hasta 100 caracteres y la descripción hasta 500; se ignoran los espacios al inicio y al final, y un nombre que queda vacío se considera no indicado.
 - RF-02: El sistema debe asignar cada gasto creado al mes que el usuario está visualizando en pantalla al momento del alta.
 - RF-03: El sistema debe aceptar únicamente montos mayores a 0 y menores o iguales a $999.999.999.999,99, con hasta 2 decimales, expresados en pesos argentinos (ARS) e ingresados con coma como separador decimal y, opcionalmente, punto como separador de miles.
 - RF-04: Al crear un gasto, el usuario debe poder indicar si se trata de un gasto recurrente o puntual.
@@ -40,7 +40,7 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - RF-17: Las modificaciones realizadas sobre un gasto recurrente en un determinado mes no deben alterar el nombre, la descripción, el monto, la fecha de vencimiento, la categoría ni el estado de pago registrados en meses anteriores.
 
 ### Categorías
-- RF-18: El sistema debe permitir crear categorías de gastos.
+- RF-18: El sistema debe permitir crear categorías de gastos. El nombre de una categoría es obligatorio y admite hasta 50 caracteres; se ignoran los espacios al inicio y al final.
 - RF-19: El sistema debe rechazar la creación o el renombrado de una categoría cuando ya exista otra con el mismo nombre o cuando el nombre sea el reservado "Sin categoría", sin distinguir mayúsculas, minúsculas ni acentos.
 - RF-20: El sistema debe permitir editar el nombre de una categoría. El nuevo nombre debe mostrarse en todos los gastos asociados, en todos los meses, incluidos los anteriores.
 - RF-21: El sistema debe permitir eliminar una categoría. Los gastos asociados a ella deben pasar a "Sin categoría" en todos los meses, incluidos los anteriores.
@@ -78,7 +78,7 @@ Gestionar de manera práctica los gastos personales de forma mensual para realiz
 - RF-39: El archivo CSV exportado debe cumplir el siguiente formato:
     - Codificación UTF-8 con BOM; separador coma; campos con comas o comillas entre comillas dobles (RFC 4180).
     - Primera fila de encabezado: `periodo,nombre,monto,categoria,vencimiento,estado,fecha_pago`.
-    - Filas ordenadas por `periodo` ascendente.
+    - Filas ordenadas por `periodo` ascendente; dentro de un mismo período, por `vencimiento` ascendente (los gastos sin vencimiento al final) y luego por `nombre`.
     - `periodo` en formato `aaaa-mm`; `vencimiento` y `fecha_pago` en formato `aaaa-mm-dd`, vacíos si no existen.
     - `monto` con punto decimal, 2 decimales y sin separador de miles (ej.: `30000.00`).
     - `categoria` con el valor `Sin categoría` cuando el gasto no tiene categoría.

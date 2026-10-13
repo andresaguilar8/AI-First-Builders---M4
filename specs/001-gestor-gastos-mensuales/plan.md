@@ -52,7 +52,7 @@ offline); secretos solo por variables de entorno
 |---|---|---|---|
 | I. Lógica de gastos test-first | Reglas en `GestorGastos.Domain` sin infraestructura, con tests unitarios escritos primero; cada test de un AC lleva `[Trait("AC", "AC-xx")]`; integración con PostgreSQL real para conteo de registros (R-13) | ✅ | ✅ |
 | II. Sin secretos en el código | Cadena de conexión y credenciales del seed por variables de entorno / user-secrets; `.env` en `.gitignore`, `.env.example` con valores ficticios (R-07, quickstart) | ✅ | ✅ |
-| III. Alcance acotado al PRD | Sin registro, sin logout, sin offline (el service worker no cachea la API), sin pre-generación. Las únicas decisiones no escritas en el PRD son técnicas y quedan marcadas para confirmar: límites de texto (R-10) y orden de filas dentro de un período en el CSV | ✅ | ✅ (con 2 decisiones a confirmar en el PRD) |
+| III. Alcance acotado al PRD | Sin registro, sin logout, sin offline (el service worker no cachea la API), sin pre-generación. Los límites de texto (R-10) y el orden de filas del CSV se incorporaron al PRD (RF-01, RF-18, RF-39) | ✅ | ✅ |
 | IV. Historial inmutable y proyección | Versiones con `effective_from` + instancias únicas por mes; renombrar/eliminar categoría vía FK `ON DELETE SET NULL` (excepción explícita) — [data-model.md](data-model.md) | ✅ | ✅ |
 | V. Fecha en Buenos Aires | `TimeProvider` inyectable + `IBusinessCalendar`; el frontend recibe `today` del backend (R-05) | ✅ | ✅ |
 | Restricciones técnicas | Stack de AGENTS.md; hasher de Identity v3 = PBKDF2 100.000 iteraciones; cookie renovada en cada request para expirar a los 30 días exactos de inactividad (R-06) | ✅ | ✅ |
@@ -125,10 +125,9 @@ backend se separa en `Domain` (reglas puras, test-first, principio I) y `Api` (H
 EF Core); no se agrega una capa de infraestructura aparte porque con un solo consumidor no aporta.
 El backend sirve el build del frontend en producción (mismo origen, R-12).
 
-**Ajuste necesario en AGENTS.md**: con una solución de varios proyectos, `dotnet run` dentro de
-`backend/` no encuentra un proyecto ejecutable. El comando correcto es
-`dotnet run --project src/GestorGastos.Api` (`dotnet restore` y `dotnet test` siguen funcionando
-desde `backend/` gracias a la solución).
+**Comando de arranque**: con una solución de varios proyectos, el backend se ejecuta con
+`dotnet run --project src/GestorGastos.Api` desde `backend/` (AGENTS.md actualizado);
+`dotnet restore` y `dotnet test` funcionan desde `backend/` gracias a la solución.
 
 ## Complexity Tracking
 
