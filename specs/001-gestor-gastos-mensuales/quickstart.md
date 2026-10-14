@@ -31,6 +31,9 @@ pnpm install
 pnpm dev                                             # http://localhost:5173 (proxy /api → backend)
 ```
 
+La cookie de sesión es `Secure`. Chrome, Edge y Firefox la aceptan en `http://localhost`, pero
+Safari no; en desarrollo, usá uno de los primeros.
+
 ## Tests automatizados
 
 ```bash

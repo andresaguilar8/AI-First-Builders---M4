@@ -328,8 +328,8 @@ contenido y formato del archivo.
   eliminan (RF-13, RF-14, AC-20, AC-22, AC-65).
 - Edición "Este mes y los siguientes" que deja un registro mensual futuro sin pago e igual a los
   valores vigentes: el registro se elimina (RNF-06, AC-64).
-- Nombres de categoría que difieren solo en mayúsculas o acentos, o que coinciden con "Sin
-  categoría": se rechazan (RF-19).
+- Nombres de categoría que difieren solo en mayúsculas, acentos o espacios repetidos, o que
+  coinciden con "Sin categoría": se rechazan (RF-19).
 - Fecha de pago posterior a hoy: se rechaza (RF-30).
 - Edición de un gasto pagado (monto, vencimiento u otro campo): sigue pagado con la misma fecha de
   pago (RF-09).
@@ -484,8 +484,9 @@ contenido y formato del archivo.
 
 - **NFR-001** (RNF-01): Las operaciones de uso (iniciar sesión, ver la alerta, consultar y navegar
   meses, crear/editar/dar de baja/eliminar gastos, cambiar tipo, marcar/desmarcar pagos, gestionar
-  categorías, ver el resumen y exportar) DEBEN responder en menos de 2 segundos en el p95, con un
-  usuario, hasta 100 gastos por mes y 10 años de historial.
+  categorías, ver el resumen y exportar) DEBEN responder en menos de 2 segundos en el p95, medido
+  en el servidor (desde que recibe la solicitud hasta que envía la respuesta), con un usuario,
+  hasta 100 gastos por mes y 10 años de historial.
 - **NFR-002** (RNF-02): Todas esas operaciones DEBEN poder usarse en pantallas desde 360 px de
   ancho sin scroll horizontal ni superposición de elementos.
 - **NFR-003** (RNF-03): La aplicación DEBE poder instalarse como aplicación web en las 2 últimas
@@ -520,7 +521,8 @@ contenido y formato del archivo.
   concreto (cambio "Solo este mes" o pago). Solo existe cuando hay información propia; si no, el
   gasto se muestra con sus valores vigentes para ese mes.
 - **Pago**: estado pagado/pendiente de un gasto en un mes, con su fecha de pago si está pagado.
-- **Categoría**: agrupador de gastos con nombre único (sin distinguir mayúsculas ni acentos). "Sin
+- **Categoría**: agrupador de gastos con nombre único (sin distinguir mayúsculas, acentos ni espacios
+  repetidos). "Sin
   categoría" es un grupo reservado, no una categoría creable.
 - **Período**: un mes de un año; es la unidad de consulta, alta, resumen y exportación.
 
