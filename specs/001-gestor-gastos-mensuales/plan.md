@@ -87,12 +87,16 @@ backend/
 ├── GestorGastos.slnx
 ├── src/
 │   ├── GestorGastos.Domain/     # sin dependencias de infraestructura
+│   │   ├── Common/              # DomainValidationException
 │   │   ├── Periods/             # Period, IBusinessCalendar
+│   │   ├── Money/               # Amount (RF-03)
 │   │   ├── Expenses/            # OneOffExpense, RecurringExpense, versiones, instancias,
 │   │   │                        # proyección, edición con alcance, conversión, baja
 │   │   ├── Payments/            # marcar/desmarcar, validación de fecha
 │   │   ├── DueStatus/           # cálculo de estados (RF-33)
+│   │   ├── Alerts/              # regla de la alerta de "vence hoy" (RF-32)
 │   │   ├── Categories/          # normalización y unicidad
+│   │   ├── Summary/             # totales del mes y por categoría
 │   │   └── Export/              # armado de filas del CSV
 │   └── GestorGastos.Api/
 │       ├── Endpoints/           # auth, periods, expenses, payments, categories, alerts, export

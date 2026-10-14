@@ -36,6 +36,7 @@ pnpm dev                                             # http://localhost:5173 (pr
 ```bash
 cd backend && dotnet test                            # dominio + integración (Testcontainers, requiere Docker)
 cd backend && dotnet test --filter "AC=AC-17"        # tests de un criterio de aceptación
+cd backend && dotnet test -- --explicit only                       # rendimiento (RNF-01, tests explícitos), antes de cada merge
 cd frontend && pnpm test
 ```
 
