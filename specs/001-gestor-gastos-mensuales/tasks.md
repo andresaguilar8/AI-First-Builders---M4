@@ -31,8 +31,8 @@ implementar. Todo test que cubre un criterio de aceptación lleva `[Trait("AC", 
 
 **Purpose**: crear la estructura de proyectos y la configuración base.
 
-- [ ] T001 Crear `docker-compose.yml` en la raíz con el servicio `postgres:16` (puerto 5432, volumen nombrado, variables `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` leídas de `.env`) (infra, sin RF)
-- [ ] T002 [P] Crear `.env.example` en la raíz con `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `ConnectionStrings__Default`, `SEED_USER_EMAIL`, `SEED_USER_PASSWORD` con valores ficticios, y crear `.gitignore` en la raíz que incluya `.env`, `bin/`, `obj/`, `node_modules/`, `dist/` (principio II) (infra, sin RF)
+- [X] T001 Crear `docker-compose.yml` en la raíz con el servicio `postgres:16` (puerto 5432, volumen nombrado, variables `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` leídas de `.env`) (infra, sin RF)
+- [X] T002 [P] Crear `.env.example` en la raíz con `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `ConnectionStrings__Default`, `SEED_USER_EMAIL`, `SEED_USER_PASSWORD` con valores ficticios, y crear `.gitignore` en la raíz que incluya `.env`, `bin/`, `obj/`, `node_modules/`, `dist/` (principio II) (infra, sin RF)
 - [ ] T003 Crear la solución `backend/GestorGastos.slnx` con los proyectos `backend/src/GestorGastos.Domain` (classlib net10.0, sin dependencias de infraestructura), `backend/src/GestorGastos.Api` (web net10.0, referencia a Domain), `backend/tests/GestorGastos.Domain.Tests` y `backend/tests/GestorGastos.Api.Tests` (xUnit v3) (infra, sin RF)
 - [ ] T004 Agregar paquetes NuGet: en Api `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `Npgsql.EntityFrameworkCore.PostgreSQL`, `Microsoft.EntityFrameworkCore.Design`; en Domain.Tests `Microsoft.Extensions.TimeProvider.Testing`; en Api.Tests `Microsoft.AspNetCore.Mvc.Testing`, `Testcontainers.PostgreSql`, `Microsoft.Extensions.TimeProvider.Testing` (infra, sin RF)
 - [ ] T005 [P] Crear `backend/Directory.Build.props` con `Nullable=enable`, `ImplicitUsings=enable`, `TreatWarningsAsErrors=true` y `backend/.editorconfig` con estilo C# estándar (infra, sin RF)

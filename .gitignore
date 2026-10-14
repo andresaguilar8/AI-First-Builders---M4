@@ -1,0 +1,29 @@
+# Secretos (principio II)
+.env
+.env.*
+!.env.example
+
+# .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+TestResults/
+
+# Build del frontend servido por el backend (T007)
+backend/src/GestorGastos.Api/wwwroot/
+
+# Node / frontend
+node_modules/
+dist/
+coverage/
+*.log
+
+# Configuración local de Claude Code
+.claude/settings.local.json
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.idea/
