@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\GestorGastos.Domain\GestorGastos.Domain.csproj" />
@@ -15,6 +15,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <UserSecretsId>5cfea4a5-0a2d-491a-a68e-a525349efe9d</UserSecretsId>
   </PropertyGroup>
 
 </Project>

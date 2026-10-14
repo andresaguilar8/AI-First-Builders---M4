@@ -14,7 +14,7 @@ POSTGRES_PASSWORD=<elegir>
 POSTGRES_DB=gastos
 ConnectionStrings__Default=Host=localhost;Port=5432;Database=gastos;Username=gastos;Password=<igual>
 SEED_USER_EMAIL=<email del usuario>
-SEED_USER_PASSWORD=<contraseña larga y única>
+SEED_USER_PASSWORD=<contraseña larga y única, con mayúscula, minúscula, número y símbolo>
 ```
 
 ## Levantar
@@ -24,7 +24,10 @@ docker compose up -d                                 # PostgreSQL 16
 
 cd backend
 dotnet restore
-dotnet run --project src/GestorGastos.Api            # aplica migraciones y crea el usuario (seed)
+# Una sola vez: pasar los secretos del .env a user-secrets (dotnet run no lee el .env)
+while IFS='=' read -r k v; do dotnet user-secrets set "${k//__/:}" "$v" --project src/GestorGastos.Api </dev/null; done \
+  < <(grep -E '^(ConnectionStrings__Default|SEED_USER_EMAIL|SEED_USER_PASSWORD)=' ../.env)
+dotnet run --project src/GestorGastos.Api            # http://localhost:5033; aplica migraciones y crea el usuario (seed)
 
 cd ../frontend
 pnpm install
@@ -67,7 +70,7 @@ Con la fecha del sistema en octubre de 2026 (o la fecha real; ajustar los meses)
 ## Verificar sesión sin acceso a datos por API
 
 ```bash
-curl -i http://localhost:5000/api/periods/2026-10    # sin cookie
+curl -i http://localhost:5033/api/periods/2026-10    # sin cookie
 ```
 
 Esperado: `HTTP/1.1 401` con cuerpo vacío (AC-55). No existe `/api/auth/register` (AC-57).
