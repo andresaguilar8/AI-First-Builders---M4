@@ -55,13 +55,12 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         });
     }
 
-    /// <summary>Cliente sin sesión. La cookie es <c>Secure</c>, por eso la base es https.</summary>
+    /// <summary>
+    /// Cliente sin sesión que guarda la cookie de sesión si el servidor la emite. La cookie es
+    /// <c>Secure</c>, por eso la base es https.
+    /// </summary>
     public HttpClient CreateAnonymousClient() =>
-        CreateClient(new WebApplicationFactoryClientOptions
-        {
-            BaseAddress = new Uri("https://localhost"),
-            AllowAutoRedirect = false,
-        });
+        CreateDefaultClient(new Uri("https://localhost"), new SessionCookieHandler());
 
     /// <summary>
     /// Cliente con la cookie de sesión del usuario de prueba, obtenida sin el endpoint de login

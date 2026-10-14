@@ -88,13 +88,13 @@ y por API, expiración por inactividad y ausencia de registro.
 
 ### Tests for User Story 1 ⚠️ (escribir primero, deben fallar)
 
-- [ ] T029 [P] [US1] Tests de integración en `backend/tests/GestorGastos.Api.Tests/Auth/AuthEndpointsTests.cs`: login correcto → 204 + cookie (AC-52); contraseña incorrecta → 401 sin datos (AC-53); `GET /api/periods/2026-10` y `POST /api/categories` sin cookie → 401 con cuerpo vacío (AC-55); avanzar `FakeTimeProvider` 30 días sin actividad → 401 (AC-56) y 29 días con una request intermedia → sigue válida; `POST /api/auth/register` → 404 y sigue habiendo 1 usuario (AC-57)
-- [ ] T030 [P] [US1] Test del seed en `backend/tests/GestorGastos.Api.Tests/Auth/UserSeederTests.cs`: crea el usuario una sola vez; el `PasswordHash` no contiene la contraseña y usa el formato v3 de Identity (RNF-04)
+- [X] T029 [P] [US1] Tests de integración en `backend/tests/GestorGastos.Api.Tests/Auth/AuthEndpointsTests.cs`: login correcto → 204 + cookie (AC-52); contraseña incorrecta → 401 sin datos (AC-53); `GET /api/periods/2026-10` y `POST /api/categories` sin cookie → 401 con cuerpo vacío (AC-55); avanzar `FakeTimeProvider` 30 días sin actividad → 401 (AC-56) y 29 días con una request intermedia → sigue válida; `POST /api/auth/register` → 404 y sigue habiendo 1 usuario (AC-57)
+- [X] T030 [P] [US1] Test del seed en `backend/tests/GestorGastos.Api.Tests/Auth/UserSeederTests.cs`: crea el usuario una sola vez; el `PasswordHash` no contiene la contraseña y usa el formato v3 de Identity (RNF-04)
 - [ ] T031 [P] [US1] Tests de frontend en `frontend/tests/features/auth/LoginPage.test.tsx`: credenciales inválidas muestran error y no muestran datos (AC-53); sin sesión, `/` redirige a `/login` (AC-54); no existe enlace ni ruta de registro (AC-57)
 
 ### Implementation for User Story 1
 
-- [ ] T032 [US1] Implementar `POST /api/auth/login` y `GET /api/auth/me` en `backend/src/GestorGastos.Api/Endpoints/AuthEndpoints.cs` según [contracts/api.yaml](contracts/api.yaml); sin endpoints de registro ni de logout (RF-36, RF-37)
+- [X] T032 [US1] Implementar `POST /api/auth/login` y `GET /api/auth/me` en `backend/src/GestorGastos.Api/Endpoints/AuthEndpoints.cs` según [contracts/api.yaml](contracts/api.yaml); sin endpoints de registro ni de logout (RF-36, RF-37)
 - [ ] T033 [P] [US1] Implementar la página de login en `frontend/src/features/auth/LoginPage.tsx` (email, contraseña, error genérico ante 401) y el guard `frontend/src/features/auth/RequireAuth.tsx` (consulta `/api/auth/me`; 401 → `/login`); al recibir 401 en cualquier request, volver a `/login` (RF-36)
 - [ ] T034 [US1] Tras el login, navegar a la vista del mes actual (`/`) en `frontend/src/features/auth/LoginPage.tsx` (AC-52)
 
