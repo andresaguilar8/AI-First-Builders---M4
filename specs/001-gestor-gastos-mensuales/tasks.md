@@ -51,15 +51,15 @@ todas las historias necesitan.
 
 ### Tests foundational (escribir primero, deben fallar)
 
-- [ ] T009 [P] Tests de `Period` en `backend/tests/GestorGastos.Domain.Tests/Periods/PeriodTests.cs`: parseo/formato `yyyy-MM`, `Next()`/`Previous()` cruzando años (`2027-01` → `2026-12`, AC-51), `LastDay`, comparación
-- [ ] T010 [P] Tests de `BusinessCalendar` en `backend/tests/GestorGastos.Domain.Tests/Periods/BusinessCalendarTests.cs` con `FakeTimeProvider`: a las 01:00 UTC del 06/10/2026 `Today` = 05/10/2026 y `CurrentPeriod` = `2026-10` (AC-48, RNF-07)
+- [X] T009 [P] Tests de `Period` en `backend/tests/GestorGastos.Domain.Tests/Periods/PeriodTests.cs`: parseo/formato `yyyy-MM`, `Next()`/`Previous()` cruzando años (`2027-01` → `2026-12`, AC-51), `LastDay`, comparación
+- [X] T010 [P] Tests de `BusinessCalendar` en `backend/tests/GestorGastos.Domain.Tests/Periods/BusinessCalendarTests.cs` con `FakeTimeProvider`: a las 01:00 UTC del 06/10/2026 `Today` = 05/10/2026 y `CurrentPeriod` = `2026-10` (AC-48, RNF-07)
 - [ ] T011 [P] Tests de `Amount` en `backend/tests/GestorGastos.Domain.Tests/Money/AmountTests.cs`: rechaza 0, -100, 10.999 (más de 2 decimales) y 1000000000000; acepta 1234.56 y 999999999999.99 (AC-05, AC-06, AC-62)
 - [ ] T012 [P] Tests de `ExpenseValues` en `backend/tests/GestorGastos.Domain.Tests/Expenses/ExpenseValuesTests.cs`: nombre obligatorio "hasta 100 caracteres" recortado (vacío tras recortar = no indicado, AC-03), descripción "hasta 500", vencimiento `≥` primer día del mes del gasto (AC-08)
 
 ### Implementación foundational
 
-- [ ] T013 [P] Implementar el value object `Period(Year, Month)` en `backend/src/GestorGastos.Domain/Periods/Period.cs` (parseo/formato `yyyy-MM`, `FirstDay` como `DateOnly`, `LastDay`, `Next`, `Previous`, `Contains(DateOnly)`, `IComparable`) (RF-02, RF-34, RF-35)
-- [ ] T014 [P] Implementar `IBusinessCalendar` y `BusinessCalendar` en `backend/src/GestorGastos.Domain/Periods/BusinessCalendar.cs`: recibe `TimeProvider`, convierte a `America/Argentina/Buenos_Aires` con `TimeZoneInfo.FindSystemTimeZoneById` y expone `Today` (`DateOnly`) y `CurrentPeriod` (RNF-07)
+- [X] T013 [P] Implementar el value object `Period(Year, Month)` en `backend/src/GestorGastos.Domain/Periods/Period.cs` (parseo/formato `yyyy-MM`, `FirstDay` como `DateOnly`, `LastDay`, `Next`, `Previous`, `Contains(DateOnly)`, `IComparable`) (RF-02, RF-34, RF-35)
+- [X] T014 [P] Implementar `IBusinessCalendar` y `BusinessCalendar` en `backend/src/GestorGastos.Domain/Periods/BusinessCalendar.cs`: recibe `TimeProvider`, convierte a `America/Argentina/Buenos_Aires` con `TimeZoneInfo.FindSystemTimeZoneById` y expone `Today` (`DateOnly`) y `CurrentPeriod` (RNF-07)
 - [ ] T015 [P] Implementar `Amount` en `backend/src/GestorGastos.Domain/Money/Amount.cs`: `decimal` "mayor a 0 y ≤ 999999999999.99, con hasta 2 decimales"; `Parse` desde string invariante con punto (`"1234.56"`) y `ToString("0.00", InvariantCulture)` (RF-03)
 - [ ] T016 Implementar `ExpenseValues` (record: `Name`, `Description?`, `Amount`, `CategoryId?`, `DueDate?`) y su validación contra un `Period` en `backend/src/GestorGastos.Domain/Expenses/ExpenseValues.cs`; errores de dominio en `backend/src/GestorGastos.Domain/Common/DomainValidationException.cs` (diccionario campo → mensajes) (RF-01, RF-05, RF-22)
 - [ ] T017 Crear las entidades del modelo en `backend/src/GestorGastos.Domain/Expenses/`: `Expense.cs` (abstracta: `Id`, `CreatedAt`), `OneOffExpense.cs` (`Period`, valores, `PaidOn?`), `RecurringExpense.cs` (`StartPeriod`, `EndPeriod?`, colecciones `Versions` e `Instances`), `RecurringVersion.cs` (`EffectiveFrom`, valores con `DueDay` 1–31 o nulo), `RecurringInstance.cs` (`Period`, valores con `DueDate?`, `PaidOn?`); y `backend/src/GestorGastos.Domain/Categories/Category.cs` (`Id`, `Name`, `NormalizedName`) según [data-model.md](data-model.md) (RF-04, RF-06, RF-08, RF-18, RNF-05, RNF-06)
