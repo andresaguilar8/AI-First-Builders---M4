@@ -10,59 +10,59 @@
 
 ## Requirement Completeness
 
-- [ ] CHK001 ¿Está definido si una edición "Este mes y los siguientes" (FR-011) que deja un registro mensual futuro sin pago e idéntico a los valores vigentes debe eliminarlo para cumplir "0 registros sin información propia"? [Gap, Spec §FR-011, §NFR-005]
-- [ ] CHK002 ¿Está especificado qué ocurre con los registros mensuales ya guardados de meses posteriores al dar de baja un recurrente o pasarlo a puntual (se eliminan o solo se ocultan)? [Gap, Spec §FR-013, §FR-014]
-- [ ] CHK003 ¿Está definido qué pasa con el registro "Solo este mes" del propio mes visualizado cuando luego se edita ese mismo mes con "Este mes y los siguientes"? [Gap, Spec §FR-010, §FR-011]
-- [ ] CHK004 ¿Se especifica si un gasto pagado puede editarse (monto, vencimiento) y si conserva su estado de pago tras la edición? [Gap, Spec §FR-009]
-- [ ] CHK005 ¿Se especifica si se puede eliminar un gasto puntual que está pagado? [Gap, Spec §FR-016]
-- [ ] CHK006 ¿Está explícito que un gasto recurrente no puede eliminarse (solo darse de baja), o falta definir esa operación? [Completeness, Spec §FR-014, §FR-016]
-- [ ] CHK007 ¿Está definido si se puede quitar el vencimiento de un gasto al editarlo, y cómo se proyecta un recurrente al que se le quitó con "Este mes y los siguientes"? [Gap, Spec §FR-009, §FR-007]
-- [ ] CHK008 ¿Está definida la reactivación de un recurrente dado de baja, o su exclusión explícita del alcance? [Gap, Spec §FR-014]
-- [ ] CHK009 ¿Se definen los largos máximos y caracteres permitidos para nombre, descripción y nombre de categoría? [Gap, Spec §FR-001, §FR-018]
-- [ ] CHK010 ¿Se especifica qué estado o indicación se muestra para los gastos pagados, dado que FR-033 solo define estados para pendientes? [Gap, Spec §FR-033]
+- [x] CHK001 ¿Está definido si una edición "Este mes y los siguientes" (FR-011) que deja un registro mensual futuro sin pago e idéntico a los valores vigentes debe eliminarlo para cumplir "0 registros sin información propia"? [Gap, Spec §FR-011, §NFR-005]
+- [x] CHK002 ¿Está especificado qué ocurre con los registros mensuales ya guardados de meses posteriores al dar de baja un recurrente o pasarlo a puntual (se eliminan o solo se ocultan)? [Gap, Spec §FR-013, §FR-014]
+- [x] CHK003 ¿Está definido qué pasa con el registro "Solo este mes" del propio mes visualizado cuando luego se edita ese mismo mes con "Este mes y los siguientes"? [Gap, Spec §FR-010, §FR-011]
+- [x] CHK004 ¿Se especifica si un gasto pagado puede editarse (monto, vencimiento) y si conserva su estado de pago tras la edición? [Gap, Spec §FR-009]
+- [x] CHK005 ¿Se especifica si se puede eliminar un gasto puntual que está pagado? [Gap, Spec §FR-016]
+- [x] CHK006 ¿Está explícito que un gasto recurrente no puede eliminarse (solo darse de baja), o falta definir esa operación? [Completeness, Spec §FR-014, §FR-016]
+- [x] CHK007 ¿Está definido si se puede quitar el vencimiento de un gasto al editarlo, y cómo se proyecta un recurrente al que se le quitó con "Este mes y los siguientes"? [Gap, Spec §FR-009, §FR-007]
+- [x] CHK008 ¿Está definida la reactivación de un recurrente dado de baja, o su exclusión explícita del alcance? [Gap, Spec §FR-014]
+- [x] CHK009 ¿Se definen los largos máximos y caracteres permitidos para nombre, descripción y nombre de categoría? [Gap, Spec §FR-001, §FR-018]
+- [x] CHK010 ¿Se especifica qué estado o indicación se muestra para los gastos pagados, dado que FR-033 solo define estados para pendientes? [Gap, Spec §FR-033]
 
 ## Requirement Clarity
 
-- [ ] CHK011 ¿Está claro en FR-011 qué son "los campos editados": solo los que el usuario cambió en esa edición o todos los campos del formulario? [Ambiguity, Spec §FR-011]
-- [ ] CHK012 ¿Está definido cómo se calcula "el mismo día que su vencimiento vigente" (FR-007) cuando el vencimiento vigente cae en un mes posterior al del gasto (caso AC-11)? [Clarity, Spec §FR-007, §Edge Cases]
-- [ ] CHK013 ¿Están definidos los umbrales de FR-033 ("más de 3 días", "1 a 3 días") como días calendario en la zona de Buenos Aires, sin depender de la hora? [Clarity, Spec §FR-033, §NFR-007]
-- [ ] CHK014 ¿Está claro que los totales del mes (FR-023 a FR-026) agrupan por el mes al que pertenece el gasto y no por el mes de su vencimiento (p. ej., gasto de octubre que vence en noviembre)? [Ambiguity, Spec §FR-025, §FR-026]
-- [ ] CHK015 ¿Está definido el alcance temporal de la alerta (FR-032): incluye pendientes de meses anteriores cuyo vencimiento es hoy y recurrentes solo proyectados del mes actual? [Ambiguity, Spec §FR-032]
-- [ ] CHK016 ¿Está claro si la regla de FR-005 (vencimiento no anterior al mes del gasto) aplica también al editar, incluida una edición "Solo este mes" de un recurrente? [Clarity, Spec §FR-005, §FR-009]
-- [ ] CHK017 ¿Está definido qué "mes de inicio" y qué valores vigentes toma un puntual convertido a recurrente, y qué entidad representa los meses anteriores de un recurrente convertido a puntual? [Clarity, Spec §FR-012, §FR-013, §Key Entities]
-- [ ] CHK018 ¿Se precisa la normalización de nombres de categoría más allá de mayúsculas y acentos (espacios al inicio o al final, espacios dobles)? [Clarity, Spec §FR-019]
-- [ ] CHK019 ¿Está claro el formato de monto aceptado al editar, y es el mismo que al crear (coma decimal, punto de miles opcional, tope)? [Clarity, Spec §FR-003, §FR-009]
+- [x] CHK011 ¿Está claro en FR-011 qué son "los campos editados": solo los que el usuario cambió en esa edición o todos los campos del formulario? [Ambiguity, Spec §FR-011]
+- [x] CHK012 ¿Está definido cómo se calcula "el mismo día que su vencimiento vigente" (FR-007) cuando el vencimiento vigente cae en un mes posterior al del gasto (caso AC-11)? [Clarity, Spec §FR-007, §Edge Cases]
+- [x] CHK013 ¿Están definidos los umbrales de FR-033 ("más de 3 días", "1 a 3 días") como días calendario en la zona de Buenos Aires, sin depender de la hora? [Clarity, Spec §FR-033, §NFR-007]
+- [x] CHK014 ¿Está claro que los totales del mes (FR-023 a FR-026) agrupan por el mes al que pertenece el gasto y no por el mes de su vencimiento (p. ej., gasto de octubre que vence en noviembre)? [Ambiguity, Spec §FR-025, §FR-026]
+- [x] CHK015 ¿Está definido el alcance temporal de la alerta (FR-032): incluye pendientes de meses anteriores cuyo vencimiento es hoy y recurrentes solo proyectados del mes actual? [Ambiguity, Spec §FR-032]
+- [x] CHK016 ¿Está claro si la regla de FR-005 (vencimiento no anterior al mes del gasto) aplica también al editar, incluida una edición "Solo este mes" de un recurrente? [Clarity, Spec §FR-005, §FR-009]
+- [x] CHK017 ¿Está definido qué "mes de inicio" y qué valores vigentes toma un puntual convertido a recurrente, y qué entidad representa los meses anteriores de un recurrente convertido a puntual? [Clarity, Spec §FR-012, §FR-013, §Key Entities]
+- [x] CHK018 ¿Se precisa la normalización de nombres de categoría más allá de mayúsculas y acentos (espacios al inicio o al final, espacios dobles)? [Clarity, Spec §FR-019]
+- [x] CHK019 ¿Está claro el formato de monto aceptado al editar, y es el mismo que al crear (coma decimal, punto de miles opcional, tope)? [Clarity, Spec §FR-003, §FR-009]
 
 ## Requirement Consistency
 
-- [ ] CHK020 ¿Es consistente FR-005 (vencimiento en el mes del gasto o posteriores) con FR-007 (en cada mes proyectado el vencimiento cae en ese mes) para el mes de alta de un recurrente? [Consistency, Spec §FR-005, §FR-007]
-- [ ] CHK021 ¿Son consistentes FR-031 y la Edge Case de desmarcar con NFR-005/NFR-006 para todas las combinaciones de pago y cambio "Solo este mes"? [Consistency, Spec §FR-031, §NFR-005, §NFR-006]
-- [ ] CHK022 ¿Es consistente FR-017 (que ahora incluye nombre y descripción) con el principio IV de la constitución, que enumera solo monto, vencimiento, categoría y estado de pago? [Consistency, Conflict]
-- [ ] CHK023 ¿Son consistentes la aclaración de FR-021 (eliminar categoría afecta todos los meses) y FR-017 cuando la categoría estaba fijada en un registro "Solo este mes" de un mes anterior? [Consistency, Spec §FR-017, §FR-021]
-- [ ] CHK024 ¿Coinciden textualmente el spec y el PRD en RF-03, RF-17, RF-30 y RF-31 después de las aclaraciones de la sesión 2026-10-13? [Consistency, Traceability]
-- [ ] CHK025 ¿Es consistente la lista de usos de la "fecha actual" en NFR-007 (y en RNF-07 del PRD) con todos sus usos reales, incluido el corte "hasta el mes actual" de la exportación (FR-038)? [Consistency, Spec §NFR-007, §FR-038]
-- [ ] CHK026 ¿Son consistentes AGENTS.md ("Qué NO hacer"), la constitución y el spec sobre qué cambios de un recurrente nunca alteran los meses anteriores? [Consistency]
+- [x] CHK020 ¿Es consistente FR-005 (vencimiento en el mes del gasto o posteriores) con FR-007 (en cada mes proyectado el vencimiento cae en ese mes) para el mes de alta de un recurrente? [Consistency, Spec §FR-005, §FR-007]
+- [x] CHK021 ¿Son consistentes FR-031 y la Edge Case de desmarcar con NFR-005/NFR-006 para todas las combinaciones de pago y cambio "Solo este mes"? [Consistency, Spec §FR-031, §NFR-005, §NFR-006]
+- [x] CHK022 ¿Es consistente FR-017 (que ahora incluye nombre y descripción) con el principio IV de la constitución, que enumera solo monto, vencimiento, categoría y estado de pago? [Consistency, Conflict]
+- [x] CHK023 ¿Son consistentes la aclaración de FR-021 (eliminar categoría afecta todos los meses) y FR-017 cuando la categoría estaba fijada en un registro "Solo este mes" de un mes anterior? [Consistency, Spec §FR-017, §FR-021]
+- [x] CHK024 ¿Coinciden textualmente el spec y el PRD en RF-03, RF-17, RF-30 y RF-31 después de las aclaraciones de la sesión 2026-10-13? [Consistency, Traceability]
+- [x] CHK025 ¿Es consistente la lista de usos de la "fecha actual" en NFR-007 (y en RNF-07 del PRD) con todos sus usos reales, incluido el corte "hasta el mes actual" de la exportación (FR-038)? [Consistency, Spec §NFR-007, §FR-038]
+- [x] CHK026 ¿Son consistentes AGENTS.md ("Qué NO hacer"), la constitución y el spec sobre qué cambios de un recurrente nunca alteran los meses anteriores? [Consistency]
 
 ## Acceptance Criteria Quality
 
-- [ ] CHK027 ¿Tienen escenarios de aceptación las reglas aclaradas sin AC propio (borrado del registro al desmarcar, tope de monto, nombre y descripción no retroactivos, fecha de pago sin mínimo)? [Gap, Spec §Clarifications]
-- [ ] CHK028 ¿Sigue siendo correcto SC-006 ("61 criterios") si se agregan escenarios para las reglas aclaradas? [Consistency, Spec §SC-006]
-- [ ] CHK029 ¿Toda regla de dominio alcanzada por el principio I de la constitución (alta, edición, baja, cambio de tipo, pagos, proyección, estados) tiene al menos un AC que pueda referenciar un test? [Coverage, Traceability]
-- [ ] CHK030 ¿Es SC-001 ("0 gastos pagados tarde al cierre del mes") medible con los datos que el sistema guarda, y está definido quién lo mide y cuándo? [Measurability, Spec §SC-001]
-- [ ] CHK031 ¿Se puede verificar SC-002 ("una sola edición") de forma objetiva, con un AC que lo respalde? [Measurability, Spec §SC-002, §AC-16]
+- [x] CHK027 ¿Tienen escenarios de aceptación las reglas aclaradas sin AC propio (borrado del registro al desmarcar, tope de monto, nombre y descripción no retroactivos, fecha de pago sin mínimo)? [Gap, Spec §Clarifications]
+- [x] CHK028 ¿Sigue siendo correcto SC-006 ("61 criterios") si se agregan escenarios para las reglas aclaradas? [Consistency, Spec §SC-006]
+- [x] CHK029 ¿Toda regla de dominio alcanzada por el principio I de la constitución (alta, edición, baja, cambio de tipo, pagos, proyección, estados) tiene al menos un AC que pueda referenciar un test? [Coverage, Traceability]
+- [x] CHK030 ¿Es SC-001 ("0 gastos pagados tarde al cierre del mes") medible con los datos que el sistema guarda, y está definido quién lo mide y cuándo? [Measurability, Spec §SC-001]
+- [x] CHK031 ¿Se puede verificar SC-002 ("una sola edición") de forma objetiva, con un AC que lo respalde? [Measurability, Spec §SC-002, §AC-16]
 
 ## Scenario & Edge Case Coverage
 
-- [ ] CHK032 ¿Hay requisitos para editar o pagar un recurrente en un mes anterior a su mes de inicio o posterior a su baja (cuando no es visible)? [Coverage, Edge Case]
-- [ ] CHK033 ¿Hay requisitos para el cambio de tipo, la baja o "Este mes y los siguientes" cuando se ejecutan desde un mes pasado, con meses intermedios hasta el actual ya pagados? [Coverage, Spec §FR-011, §FR-013, §FR-014]
-- [ ] CHK034 ¿Está cubierto el caso de un recurrente con vencimiento el 29, 30 o 31 en todos los meses afectados, incluido febrero de un año bisiesto? [Edge Case, Spec §FR-007]
-- [ ] CHK035 ¿Define la exportación qué valores toma cada fila de un recurrente con registro propio o proyectado (monto vigente de ese mes, categoría actual tras renombrar o eliminar) y el orden de las filas dentro de un mismo período? [Coverage, Spec §FR-038, §FR-039, §Assumptions]
-- [ ] CHK036 ¿Está documentado como intencional que el CSV no incluya la descripción ni el tipo (puntual o recurrente) del gasto? [Assumption, Spec §FR-039]
+- [x] CHK032 ¿Hay requisitos para editar o pagar un recurrente en un mes anterior a su mes de inicio o posterior a su baja (cuando no es visible)? [Coverage, Edge Case]
+- [x] CHK033 ¿Hay requisitos para el cambio de tipo, la baja o "Este mes y los siguientes" cuando se ejecutan desde un mes pasado, con meses intermedios hasta el actual ya pagados? [Coverage, Spec §FR-011, §FR-013, §FR-014]
+- [x] CHK034 ¿Está cubierto el caso de un recurrente con vencimiento el 29, 30 o 31 en todos los meses afectados, incluido febrero de un año bisiesto? [Edge Case, Spec §FR-007]
+- [x] CHK035 ¿Define la exportación qué valores toma cada fila de un recurrente con registro propio o proyectado (monto vigente de ese mes, categoría actual tras renombrar o eliminar) y el orden de las filas dentro de un mismo período? [Coverage, Spec §FR-038, §FR-039, §Assumptions]
+- [x] CHK036 ¿Está documentado como intencional que el CSV no incluya la descripción ni el tipo (puntual o recurrente) del gasto? [Assumption, Spec §FR-039]
 
 ## Dependencies & Assumptions
 
-- [ ] CHK037 ¿Están las suposiciones del spec (pago de meses futuros con fecha de hoy, eliminación definitiva de un puntual, CSV vacío, alerta solo por "vence hoy") respaldadas en el PRD, como exige el principio III? [Assumption, Spec §Assumptions]
-- [ ] CHK038 ¿Está documentado que el reloj debe poder fijarse en las pruebas (principio V) como restricción que el spec deja para el plan? [Dependency, Spec §NFR-007]
+- [x] CHK037 ¿Están las suposiciones del spec (pago de meses futuros con fecha de hoy, eliminación definitiva de un puntual, CSV vacío, alerta solo por "vence hoy") respaldadas en el PRD, como exige el principio III? [Assumption, Spec §Assumptions]
+- [x] CHK038 ¿Está documentado que el reloj debe poder fijarse en las pruebas (principio V) como restricción que el spec deja para el plan? [Dependency, Spec §NFR-007]
 
 ## Notes
 

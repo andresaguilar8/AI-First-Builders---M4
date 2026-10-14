@@ -30,6 +30,13 @@ PRD.
 - Q: Al pasar a puntual un recurrente con meses anteriores, ¿cómo quedan esos meses y qué es el gasto del mes visualizado? → A: El recurrente termina en el mes anterior (sus meses previos siguen siendo suyos) y en el mes visualizado queda un puntual nuevo e independiente con los valores y el pago de ese mes.
 - Q: ¿Las suposiciones del spec que no están en el PRD pasan al PRD como requisitos explícitos? → A: Sí; se incorporan al texto de los RF correspondientes, sin AC nuevos.
 
+### Session 2026-10-14
+
+- Q: ¿Se puede eliminar un gasto puntual pagado? → A: Sí, sin restricción.
+- Q: Al editar un gasto, ¿se puede quitar el vencimiento? → A: Sí; en un recurrente con "Este mes y los siguientes", los meses siguientes se proyectan sin vencimiento.
+- Q: ¿Se puede reactivar un recurrente dado de baja? → A: No; queda fuera de alcance.
+- Q: ¿Se ignoran los espacios repetidos al comparar nombres de categoría? → A: Sí, se colapsan.
+
 ## User Scenarios & Testing *(mandatory)*
 
 Actor único: **Andrés**, que administra sus gastos personales mes a mes. Necesita registrar sus
@@ -332,6 +339,10 @@ contenido y formato del archivo.
   siguiente; manda la fecha de Buenos Aires (RNF-07, AC-48).
 - Monto de 999.999.999.999,99: se acepta; 1.000.000.000.000 o más: se rechaza (FR-003).
 - Navegación entre años (enero ↔ diciembre) (AC-51).
+- Operar sobre un recurrente en un mes en que no aparece (antes de su inicio o después de su
+  baja): no es posible; solo se opera sobre los gastos visibles en el mes visualizado (FR-009).
+- Eliminar un puntual pagado: se permite y es definitivo (FR-016).
+- Quitar el vencimiento al editar: se permite; el gasto pasa a "Al día" (FR-009, FR-033).
 - Mes sin gastos: se muestra vacío con totales en $0.
 - Textos con comas o comillas en el CSV: se encierran entre comillas dobles (RF-39, AC-59).
 - Sesión inactiva por 30 días en un dispositivo compartido: se vuelve a pedir credenciales
@@ -352,7 +363,7 @@ contenido y formato del archivo.
 - **FR-002** (RF-02): El sistema DEBE asignar cada gasto nuevo al mes que el usuario está viendo.
 - **FR-003** (RF-03): El sistema DEBE aceptar solo montos mayores a 0 y menores o iguales a
   $999.999.999.999,99, con hasta 2 decimales, en pesos argentinos, ingresados con coma decimal y
-  punto de miles opcional.
+  punto de miles opcional, tanto al crear como al editar.
 - **FR-004** (RF-04): El usuario DEBE poder indicar al crear un gasto si es recurrente o puntual.
 - **FR-005** (RF-05): El sistema DEBE aceptar vencimientos en el mes del gasto o en meses
   posteriores y rechazar vencimientos en meses anteriores, tanto al crear como al editar (en un
@@ -372,7 +383,9 @@ contenido y formato del archivo.
 
 - **FR-009** (RF-09): El sistema DEBE permitir editar nombre, descripción, monto, categoría y
   vencimiento de un gasto. Editar un gasto pagado DEBE conservar su estado y su fecha de pago,
-  cualquiera sea el campo modificado.
+  cualquiera sea el campo modificado. Al editar se PUEDE quitar el vencimiento; en un recurrente
+  con "Este mes y los siguientes", los meses siguientes se proyectan sin vencimiento. Solo se
+  pueden editar, pagar, dar de baja, convertir o eliminar gastos que aparecen en el mes visualizado.
 - **FR-010** (RF-10): Al editar un recurrente, el usuario DEBE elegir entre "Solo este mes" y "Este
   mes y los siguientes".
 - **FR-011** (RF-11): "Este mes y los siguientes" DEBE sobrescribir también en meses futuros con
@@ -392,8 +405,8 @@ contenido y formato del archivo.
   esos meses DEBEN eliminarse.
 - **FR-015** (RF-15): Al dar de baja un recurrente, el sistema DEBE conservar sus registros de los
   meses anteriores al visualizado.
-- **FR-016** (RF-16): El sistema DEBE permitir eliminar un gasto puntual; la eliminación es
-  definitiva.
+- **FR-016** (RF-16): El sistema DEBE permitir eliminar un gasto puntual, esté pendiente o pagado;
+  la eliminación es definitiva. Un recurrente NO se elimina: se da de baja (FR-014).
 - **FR-017** (RF-17): Ninguna modificación de un recurrente hecha en un mes DEBE alterar nombre,
   descripción, monto, vencimiento, categoría ni estado de pago de meses anteriores (la única
   excepción es renombrar o eliminar la categoría en sí, FR-020/FR-021).
@@ -403,7 +416,8 @@ contenido y formato del archivo.
 - **FR-018** (RF-18): El sistema DEBE permitir crear categorías, con nombre obligatorio de hasta 50
   caracteres, sin espacios al inicio ni al final.
 - **FR-019** (RF-19): El sistema DEBE rechazar crear o renombrar una categoría con un nombre ya
-  existente o igual a "Sin categoría", sin distinguir mayúsculas, minúsculas ni acentos.
+  existente o igual a "Sin categoría", sin distinguir mayúsculas, minúsculas ni acentos, e
+  ignorando espacios al inicio, al final y repetidos dentro del nombre.
 - **FR-020** (RF-20): El sistema DEBE permitir renombrar una categoría; el nuevo nombre DEBE verse
   en todos sus gastos, en todos los meses, incluidos los anteriores.
 - **FR-021** (RF-21): El sistema DEBE permitir eliminar una categoría; sus gastos DEBEN pasar a
@@ -436,7 +450,9 @@ contenido y formato del archivo.
   (incluidos los recurrentes solo proyectados del mes actual). Los gastos ya vencidos no disparan
   la alerta; se distinguen por su estado (FR-033).
 - **FR-033** (RF-33): Para cada pendiente, el sistema DEBE mostrar su estado: "Al día" (más de 3
-  días o sin vencimiento), "Próximo a vencer" (1 a 3 días), "Vence hoy" o "Vencido".
+  días o sin vencimiento), "Próximo a vencer" (1 a 3 días), "Vence hoy" o "Vencido", contando
+  días calendario entre hoy y el vencimiento, sin considerar la hora. Un gasto pagado DEBE
+  mostrarse como "Pagado" con su fecha de pago.
 
 **Navegación**
 
@@ -461,7 +477,8 @@ contenido y formato del archivo.
   vencimiento al final) y luego por `nombre`;
   `periodo` como `aaaa-mm`; fechas como `aaaa-mm-dd` o vacías; `monto` con punto decimal, 2
   decimales y sin separador de miles; `categoria` = `Sin categoría` si no tiene; `estado` =
-  `Pagado` o `Pendiente`.
+  `Pagado` o `Pendiente`. Cada fila refleja los valores del gasto en ese mes y el nombre actual
+  de su categoría; el archivo no incluye la descripción ni el tipo puntual/recurrente.
 
 ### Non-Functional Requirements
 
@@ -484,7 +501,9 @@ contenido y formato del archivo.
   información propia (un pago o algún campo distinto del valor vigente); toda operación que lo
   deje sin información propia (desmarcar, "Este mes y los siguientes" que iguala sus campos) DEBE
   eliminarlo.
-- **NFR-007** (RNF-07): La fecha actual DEBE calcularse en la zona horaria de Buenos Aires.
+- **NFR-007** (RNF-07): La fecha actual DEBE calcularse en la zona horaria de Buenos Aires para
+  la alerta, los estados de vencimiento, la fecha de pago, el mes inicial y el último mes incluido
+  en la exportación.
 - **NFR-008** (RNF-08): La sesión DEBE expirar tras 30 días sin actividad.
 
 ### Key Entities
@@ -511,6 +530,8 @@ contenido y formato del archivo.
 
 - **SC-001**: Al cierre de cada mes, 0 gastos con vencimiento en ese mes quedan en estado Vencido
   o marcados como pagados con fecha de pago posterior a su vencimiento (métrica de éxito del PRD).
+  La mide el usuario al inicio de cada mes con el CSV exportado (columnas `vencimiento`, `estado`
+  y `fecha_pago` del mes anterior); no requiere una funcionalidad propia.
 - **SC-002**: Un aumento permanente de un gasto recurrente se registra con una sola edición y se ve
   reflejado en todos los meses siguientes, sin cambiar ningún mes anterior.
 - **SC-003**: El 95% de las operaciones de uso se completan en menos de 2 segundos con 10 años de
@@ -526,5 +547,5 @@ contenido y formato del archivo.
 - La carga inicial del único usuario (email y contraseña) se hace al instalar el sistema, con
   valores provistos por fuera del código.
 - Fuera de alcance (según PRD): múltiples usuarios, registro, cierre de sesión, recuperación de
-  contraseña, límite o bloqueo por intentos fallidos de inicio de sesión, roles, multimoneda, cuentas bancarias, ingresos, filtros de exportación, instalación
+  contraseña, límite o bloqueo por intentos fallidos de inicio de sesión, roles, reactivación de un recurrente dado de baja, multimoneda, cuentas bancarias, ingresos, filtros de exportación, instalación
   en Firefox y Safari, uso sin conexión y notificaciones push, por correo o WhatsApp.
