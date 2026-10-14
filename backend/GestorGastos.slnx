@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GestorGastos.Api/GestorGastos.Api.csproj" />
+    <Project Path="src/GestorGastos.Domain/GestorGastos.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GestorGastos.Api.Tests/GestorGastos.Api.Tests.csproj" />
+    <Project Path="tests/GestorGastos.Domain.Tests/GestorGastos.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
