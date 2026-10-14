@@ -36,9 +36,9 @@ implementar. Todo test que cubre un criterio de aceptación lleva `[Trait("AC", 
 - [X] T003 Crear la solución `backend/GestorGastos.slnx` con los proyectos `backend/src/GestorGastos.Domain` (classlib net10.0, sin dependencias de infraestructura), `backend/src/GestorGastos.Api` (web net10.0, referencia a Domain), `backend/tests/GestorGastos.Domain.Tests` y `backend/tests/GestorGastos.Api.Tests` (xUnit v3) (infra, sin RF)
 - [X] T004 Agregar paquetes NuGet: en Api `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `Npgsql.EntityFrameworkCore.PostgreSQL`, `Microsoft.EntityFrameworkCore.Design`; en Domain.Tests `Microsoft.Extensions.TimeProvider.Testing`; en Api.Tests `Microsoft.AspNetCore.Mvc.Testing`, `Testcontainers.PostgreSql`, `Microsoft.Extensions.TimeProvider.Testing` (infra, sin RF)
 - [X] T005 [P] Crear `backend/Directory.Build.props` con `Nullable=enable`, `ImplicitUsings=enable`, `TreatWarningsAsErrors=true` y `backend/.editorconfig` con estilo C# estándar (infra, sin RF)
-- [ ] T006 [P] Inicializar el frontend con Vite + React 19 + TypeScript 5 en `frontend/` usando pnpm; agregar `react-router`, `@tanstack/react-query`, `vite-plugin-pwa`, y como devDependencies `vitest`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, `jsdom`, `msw` (infra, sin RF)
-- [ ] T007 [P] Configurar `frontend/vite.config.ts` con proxy `/api` → backend en desarrollo, salida de build a `backend/src/GestorGastos.Api/wwwroot`, y entorno de test `jsdom` con setup `frontend/tests/setup.ts` (jest-dom + servidor MSW); script `test` en `frontend/package.json` = `vitest run` (infra, sin RF)
-- [ ] T008 [P] Configurar ESLint y Prettier en `frontend/` (`eslint.config.js`, `.prettierrc`) con `tsconfig.json` en modo `strict` (infra, sin RF)
+- [X] T006 [P] Inicializar el frontend con Vite + React 19 + TypeScript 5 en `frontend/` usando pnpm; agregar `react-router`, `@tanstack/react-query`, `vite-plugin-pwa`, y como devDependencies `vitest`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, `jsdom`, `msw` (infra, sin RF)
+- [X] T007 [P] Configurar `frontend/vite.config.ts` con proxy `/api` → backend en desarrollo, salida de build a `backend/src/GestorGastos.Api/wwwroot`, y entorno de test `jsdom` con setup `frontend/tests/setup.ts` (jest-dom + servidor MSW); script `test` en `frontend/package.json` = `vitest run` (infra, sin RF)
+- [X] T008 [P] Configurar ESLint y Prettier en `frontend/` (`eslint.config.js`, `.prettierrc`) con `tsconfig.json` en modo `strict` (infra, sin RF)
 
 ---
 
