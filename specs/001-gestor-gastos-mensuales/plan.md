@@ -99,6 +99,8 @@ backend/
 │   │   ├── Summary/             # totales del mes y por categoría
 │   │   └── Export/              # armado de filas del CSV
 │   └── GestorGastos.Api/
+│       ├── Contracts/           # DTOs de request/response según contracts/api.yaml
+│       ├── Services/            # consultas del mes, alerta y comandos sobre gastos
 │       ├── Endpoints/           # auth, periods, expenses, payments, categories, alerts, export
 │       ├── Auth/                # Identity, cookie, seed del usuario
 │       ├── Data/                # DbContext, configuraciones EF, Migrations/
