@@ -5,7 +5,11 @@
 
 ## Prerrequisitos
 
-- .NET SDK 10, Node.js 22 LTS y pnpm, Docker Desktop.
+- .NET SDK 10, Node.js 22 LTS y pnpm, Docker.
+- Si Docker corre dentro de WSL (Docker Engine, sin Docker Desktop), los tests de integración
+  deben correrse con el SDK de .NET **de Linux** instalado en WSL: Testcontainers necesita el
+  socket `/var/run/docker.sock`, que el `dotnet.exe` de Windows no alcanza. El SDK de Linux
+  requiere `libicu` (`sudo apt-get install -y libicu78` en Ubuntu 26.04).
 - Archivo `.env` en la raíz, creado a partir de `.env.example` (nunca se commitea, principio II):
 
 ```text
