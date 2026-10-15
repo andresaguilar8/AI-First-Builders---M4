@@ -112,8 +112,10 @@ export function ExpenseForm({ period, expense, onDone }: ExpenseFormProps) {
   return (
     <form className="expense-form" onSubmit={handleSubmit} noValidate>
       <label htmlFor="expense-name">Nombre</label>
+      {/* El formulario se abre arriba de la lista: el foco lo trae a la vista en el celular. */}
       <input
         id="expense-name"
+        autoFocus
         value={name}
         maxLength={NAME_MAX_LENGTH}
         onChange={(event) => setName(event.target.value)}

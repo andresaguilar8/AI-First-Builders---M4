@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import type { MonthExpense } from '../../api/types'
 import { periodOf } from '../../lib/dates'
 import { ExpenseForm } from '../expenses/ExpenseForm'
+import { ExportButton } from '../export/ExportButton'
 import { CategorySummary } from './CategorySummary'
 import { DueTodayAlert } from './DueTodayAlert'
 import { ExpenseList } from './ExpenseList'
@@ -61,6 +62,7 @@ export function MonthPage() {
     <main className="month">
       <nav className="page-nav">
         <Link to="/categorias">Categorías</Link>
+        <ExportButton />
       </nav>
       <h1>Gastos del mes</h1>
       <DueTodayAlert />
