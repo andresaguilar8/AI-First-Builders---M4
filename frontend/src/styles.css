@@ -65,3 +65,79 @@ button {
   color: var(--color-danger);
   margin: 0;
 }
+
+.month-navigator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.month-navigator h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.month-navigator button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.expense-list {
+  list-style: none;
+  margin: var(--space) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.expense {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+}
+
+.expense-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.expense-amount {
+  white-space: nowrap;
+}
+
+.expense-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.empty {
+  color: var(--color-muted);
+}
+
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: var(--space) 0;
+}
+
+.expense-form fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
