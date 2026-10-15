@@ -8,6 +8,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GestorGastos.Api.Services;
 
+/// <summary>Resultado de una operación sobre un gasto del mes.</summary>
+public enum CommandOutcome
+{
+    Done,
+
+    /// <summary>El gasto no existe o no aparece en el mes (404).</summary>
+    NotFound,
+
+    /// <summary>La operación no corresponde al tipo del gasto (409).</summary>
+    WrongKind,
+}
+
 /// <summary>Operaciones que modifican gastos en el mes visualizado.</summary>
 public sealed class ExpenseCommandService(AppDbContext db, TimeProvider time, IBusinessCalendar calendar)
 {
@@ -93,6 +105,67 @@ public sealed class ExpenseCommandService(AppDbContext db, TimeProvider time, IB
         await db.SaveChangesAsync(ct);
 
         return MonthProjector.EffectiveIn(expense, period);
+    }
+
+    /// <summary>Elimina definitivamente un puntual, pendiente o pagado; un recurrente se da de baja (RF-16).</summary>
+    public async Task<CommandOutcome> DeleteAsync(Period period, Guid expenseId, CancellationToken ct)
+    {
+        var expense = await FindInMonthAsync(period, expenseId, ct);
+        if (expense is not OneOffExpense)
+            return expense is null ? CommandOutcome.NotFound : CommandOutcome.WrongKind;
+
+        db.Expenses.Remove(expense);
+        await db.SaveChangesAsync(ct);
+        return CommandOutcome.Done;
+    }
+
+    /// <summary>Da de baja un recurrente desde el mes (RF-14, RF-15).</summary>
+    public async Task<CommandOutcome> DiscontinueAsync(Period period, Guid expenseId, CancellationToken ct)
+    {
+        var expense = await FindInMonthAsync(period, expenseId, ct);
+        if (expense is not RecurringExpense recurring)
+            return expense is null ? CommandOutcome.NotFound : CommandOutcome.WrongKind;
+
+        if (ExpenseLifecycle.Discontinue(recurring, period) == DiscontinueOutcome.Removed)
+            db.Expenses.Remove(recurring);
+        await db.SaveChangesAsync(ct);
+        return CommandOutcome.Done;
+    }
+
+    /// <summary>Cambia el tipo del gasto desde el mes; el gasto resultante tiene otro id (RF-12, RF-13).</summary>
+    public async Task<(CommandOutcome Outcome, EffectiveExpense? Expense)> ConvertAsync(
+        Period period,
+        Guid expenseId,
+        ConvertExpenseRequest request,
+        CancellationToken ct)
+    {
+        if (request.To is null)
+            throw new DomainValidationException("to", "Indicá el tipo al que se cambia el gasto.");
+
+        var expense = await FindInMonthAsync(period, expenseId, ct);
+        if (expense is null)
+            return (CommandOutcome.NotFound, null);
+
+        Expense created;
+        switch (expense)
+        {
+            case RecurringExpense recurring when request.To == ExpenseKind.OneOff:
+                var result = ExpenseLifecycle.ToOneOff(recurring, period, time.GetUtcNow());
+                if (result.RemoveOriginal)
+                    db.Expenses.Remove(recurring);
+                created = result.Created;
+                break;
+            case OneOffExpense oneOff when request.To == ExpenseKind.Recurring:
+                created = ExpenseLifecycle.ToRecurring(oneOff, period, time.GetUtcNow());
+                db.Expenses.Remove(oneOff);
+                break;
+            default:
+                return (CommandOutcome.WrongKind, null);
+        }
+
+        db.Expenses.Add(created);
+        await db.SaveChangesAsync(ct);
+        return (CommandOutcome.Done, MonthProjector.EffectiveIn(created, period));
     }
 
     /// <summary>

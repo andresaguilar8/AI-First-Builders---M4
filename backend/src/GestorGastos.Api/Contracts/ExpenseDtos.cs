@@ -69,6 +69,8 @@ public sealed record UpdateExpenseRequest(
     EditScope? Scope)
     : ExpenseValuesRequest(Name, Description, Amount, CategoryId, DueDate);
 
+public sealed record ConvertExpenseRequest(ExpenseKind? To);
+
 /// <summary>Fecha real de pago; solo se usa si el gasto está Vencido (RF-28, RF-29).</summary>
 public sealed record MarkPaidRequest(DateOnly? PaidOn);
 
