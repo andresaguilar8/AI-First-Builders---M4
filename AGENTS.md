@@ -18,7 +18,7 @@ docker compose up -d
 # Backend
 cd backend
 dotnet restore
-dotnet run
+dotnet run --project src/GestorGastos.Api
 
 # Frontend
 cd frontend

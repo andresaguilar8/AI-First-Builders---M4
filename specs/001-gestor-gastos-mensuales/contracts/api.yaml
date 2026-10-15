@@ -1,0 +1,394 @@
+openapi: 3.1.0
+info:
+  title: Gestor de gastos API
+  version: 1.0.0
+  description: |
+    API REST consumida por el frontend (mismo origen). Autenticación por cookie HttpOnly.
+    Todos los endpoints salvo POST /api/auth/login exigen sesión y devuelven 401 sin datos si no
+    la hay (AC-55). No existe endpoint de registro (RF-37) ni de cierre de sesión (fuera de alcance).
+    Períodos en formato `yyyy-MM`; fechas `yyyy-MM-dd`; montos como string con punto decimal.
+    Errores de validación: 400 application/problem+json (RFC 9457) con `errors` por campo.
+
+servers:
+  - url: /
+
+security:
+  - sessionCookie: []
+
+paths:
+  /api/auth/login:
+    post:
+      summary: Iniciar sesión (RF-36)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '204': { description: Sesión iniciada; setea la cookie (expira tras 30 días sin actividad, RNF-08) }
+        '401': { description: Credenciales inválidas, sin datos (AC-53) }
+
+  /api/auth/me:
+    get:
+      summary: Verificar sesión vigente
+      responses:
+        '200':
+          description: Sesión válida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/alerts/due-today:
+    get:
+      summary: Alerta de vencimientos de hoy (RF-32)
+      description: Pendientes de cualquier mes con vencimiento igual a hoy (Buenos Aires). Los vencidos no cuentan.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [today, count]
+                properties:
+                  today: { type: string, format: date }
+                  count: { type: integer, minimum: 0 }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/periods/{period}:
+    parameters: [ { $ref: '#/components/parameters/Period' } ]
+    get:
+      summary: Gastos, totales y resumen por categoría del mes (RF-23 a RF-26, RF-33 a RF-35)
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MonthView' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/periods/{period}/expenses:
+    parameters: [ { $ref: '#/components/parameters/Period' } ]
+    post:
+      summary: Crear gasto en el mes visualizado (RF-01 a RF-05)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ExpenseValues'
+                - type: object
+                  required: [kind]
+                  properties:
+                    kind: { $ref: '#/components/schemas/ExpenseKind' }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MonthExpense' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/periods/{period}/expenses/{expenseId}:
+    parameters:
+      - $ref: '#/components/parameters/Period'
+      - $ref: '#/components/parameters/ExpenseId'
+    put:
+      summary: Editar gasto (RF-09 a RF-11, RF-17)
+      description: |
+        `scope` es obligatorio para recurrentes y se ignora para puntuales. Conserva el estado de
+        pago. Con `ThisAndFollowing` solo se propagan los campos cuyo valor cambió respecto del
+        valor efectivo del mes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ExpenseValues'
+                - type: object
+                  properties:
+                    scope: { type: string, enum: [ThisMonth, ThisAndFollowing] }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MonthExpense' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: El gasto no existe o no aparece en ese mes }
+    delete:
+      summary: Eliminar gasto puntual (RF-16)
+      responses:
+        '204': { description: Eliminado definitivamente }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe en ese mes }
+        '409': { description: Es recurrente; usar /discontinue }
+
+  /api/periods/{period}/expenses/{expenseId}/discontinue:
+    parameters:
+      - $ref: '#/components/parameters/Period'
+      - $ref: '#/components/parameters/ExpenseId'
+    post:
+      summary: Dar de baja un recurrente desde el mes visualizado (RF-14, RF-15)
+      responses:
+        '204': { description: Baja aplicada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe en ese mes }
+        '409': { description: Es puntual }
+
+  /api/periods/{period}/expenses/{expenseId}/convert:
+    parameters:
+      - $ref: '#/components/parameters/Period'
+      - $ref: '#/components/parameters/ExpenseId'
+    post:
+      summary: Cambiar tipo puntual ↔ recurrente (RF-12, RF-13)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [to]
+              properties:
+                to: { $ref: '#/components/schemas/ExpenseKind' }
+      responses:
+        '200':
+          description: Gasto resultante en el mes (nuevo id)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MonthExpense' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe en ese mes }
+        '409': { description: Ya es del tipo pedido }
+
+  /api/periods/{period}/expenses/{expenseId}/payment:
+    parameters:
+      - $ref: '#/components/parameters/Period'
+      - $ref: '#/components/parameters/ExpenseId'
+    put:
+      summary: Marcar como pagado (RF-27 a RF-30)
+      description: |
+        Si el gasto no está Vencido, `paidOn` debe omitirse y se registra hoy (RF-28).
+        Si está Vencido, `paidOn` es opcional (por defecto hoy) y debe ser ≤ hoy (RF-29, RF-30).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paidOn: { type: string, format: date }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MonthExpense' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe en ese mes }
+    delete:
+      summary: Desmarcar pago (RF-31)
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MonthExpense' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe en ese mes }
+
+  /api/categories:
+    get:
+      summary: Listar categorías
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Category' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      summary: Crear categoría (RF-18, RF-19)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Nombre duplicado o reservado (sin distinguir mayúsculas ni acentos) }
+
+  /api/categories/{categoryId}:
+    parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    put:
+      summary: Renombrar categoría (RF-19, RF-20)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe }
+        '409': { description: Nombre duplicado o reservado }
+    delete:
+      summary: Eliminar categoría; sus gastos pasan a "Sin categoría" en todos los meses (RF-21)
+      responses:
+        '204': { description: Eliminada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { description: No existe }
+
+  /api/export.csv:
+    get:
+      summary: Exportar historial a CSV (RF-38, RF-39)
+      description: Formato detallado en [csv-export.md](csv-export.md).
+      responses:
+        '200':
+          content:
+            text/csv; charset=utf-8:
+              schema: { type: string }
+          headers:
+            Content-Disposition:
+              schema: { type: string, example: 'attachment; filename="gastos-2026-10-05.csv"' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: gg.session
+
+  parameters:
+    Period:
+      name: period
+      in: path
+      required: true
+      schema: { type: string, pattern: '^\d{4}-(0[1-9]|1[0-2])$', example: '2026-10' }
+    ExpenseId:
+      name: expenseId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    Unauthorized:
+      description: Sin sesión válida; cuerpo vacío, sin datos de la aplicación (AC-55)
+    ValidationError:
+      description: Datos inválidos
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              title: { type: string }
+              status: { type: integer }
+              errors:
+                type: object
+                additionalProperties:
+                  type: array
+                  items: { type: string }
+
+  schemas:
+    ExpenseKind:
+      type: string
+      enum: [OneOff, Recurring]
+
+    Amount:
+      type: string
+      description: Mayor a 0, hasta 999999999999.99, con hasta 2 decimales (RF-03)
+      pattern: '^\d{1,12}(\.\d{1,2})?$'
+      example: '1234.56'
+
+    ExpenseValues:
+      type: object
+      required: [name, amount]
+      properties:
+        name: { type: string, maxLength: 100 }
+        description: { type: [string, 'null'], maxLength: 500 }
+        amount: { $ref: '#/components/schemas/Amount' }
+        categoryId: { type: [string, 'null'], format: uuid }
+        dueDate:
+          type: [string, 'null']
+          format: date
+          description: Debe caer en el mes visualizado o en uno posterior (RF-05)
+
+    DueStatus:
+      type: string
+      enum: [Pagado, AlDia, ProximoAVencer, VenceHoy, Vencido]
+
+    MonthExpense:
+      type: object
+      required: [id, kind, name, amount, status]
+      properties:
+        id: { type: string, format: uuid }
+        kind: { $ref: '#/components/schemas/ExpenseKind' }
+        name: { type: string }
+        description: { type: [string, 'null'] }
+        amount: { $ref: '#/components/schemas/Amount' }
+        category:
+          type: [object, 'null']
+          description: null = "Sin categoría"
+          properties:
+            id: { type: string, format: uuid }
+            name: { type: string }
+        dueDate: { type: [string, 'null'], format: date }
+        paidOn: { type: [string, 'null'], format: date }
+        status: { $ref: '#/components/schemas/DueStatus' }
+
+    MonthView:
+      type: object
+      required: [period, today, expenses, total, pendingTotal, byCategory]
+      properties:
+        period: { type: string, example: '2026-10' }
+        today: { type: string, format: date, description: Fecha actual en Buenos Aires (RNF-07) }
+        expenses:
+          type: array
+          items: { $ref: '#/components/schemas/MonthExpense' }
+        total: { $ref: '#/components/schemas/Amount' }
+        pendingTotal: { $ref: '#/components/schemas/Amount' }
+        byCategory:
+          type: array
+          items:
+            type: object
+            required: [categoryName, total]
+            properties:
+              categoryId: { type: [string, 'null'], format: uuid }
+              categoryName: { type: string, description: '"Sin categoría" si categoryId es null' }
+              total: { $ref: '#/components/schemas/Amount' }
+
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+
+    CategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, maxLength: 50 }

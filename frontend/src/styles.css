@@ -1,0 +1,273 @@
+/* Base mobile-first: todo debe poder usarse desde 360 px de ancho sin scroll horizontal (RNF-02). */
+
+:root {
+  --color-text: #1f1d24;
+  --color-muted: #625d6b;
+  --color-bg: #ffffff;
+  --color-surface: #f5f4f7;
+  --color-border: #dcd9e0;
+  --color-accent: #2f5bd3;
+  --color-danger: #b42318;
+  --space: 1rem;
+
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  overflow-wrap: anywhere;
+}
+
+#root {
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: var(--space);
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  max-width: 100%;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 24rem;
+}
+
+.form-error {
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.month-navigator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.month-navigator h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.month-navigator button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.expense-list {
+  list-style: none;
+  margin: var(--space) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.expense {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+}
+
+.expense-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.expense-amount {
+  white-space: nowrap;
+}
+
+.expense-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.empty {
+  color: var(--color-muted);
+}
+
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: var(--space) 0;
+}
+
+.expense-form fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.expense--recurring {
+  border-left: 4px solid var(--color-accent);
+}
+
+.expense-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dialog {
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-bg);
+  box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 15%);
+}
+
+.dialog h3 {
+  margin-top: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.status {
+  font-weight: 600;
+}
+
+.status--ProximoAVencer {
+  color: #8a5a00;
+}
+
+.status--VenceHoy,
+.status--Vencido {
+  color: var(--color-danger);
+}
+
+.status--Pagado {
+  color: #1c7a3c;
+}
+
+.due-today-alert {
+  margin: 0 0 var(--space);
+  padding: 0.75rem;
+  border: 1px solid var(--color-danger);
+  border-radius: 0.5rem;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.page-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space);
+}
+
+.page-nav a {
+  color: var(--color-accent);
+}
+
+.totals dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 1rem;
+  margin: var(--space) 0;
+}
+
+.totals dt {
+  color: var(--color-muted);
+}
+
+.totals dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.category-summary h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.category-summary ul,
+.category-list {
+  list-style: none;
+  margin: 0 0 var(--space);
+  padding: 0;
+}
+
+.category-summary li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.category-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: var(--space);
+}
+
+.inline-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.inline-field input {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.category {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.export-link {
+  color: var(--color-accent);
+}
