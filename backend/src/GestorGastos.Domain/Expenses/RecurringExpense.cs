@@ -31,4 +31,19 @@ public sealed class RecurringExpense : Expense
     public IReadOnlyList<RecurringVersion> Versions => _versions;
 
     public IReadOnlyList<RecurringInstance> Instances => _instances;
+
+    /// <summary>Indica si el gasto aparece en el mes: entre su inicio y su baja (inclusive).</summary>
+    public bool IsActiveIn(Period period) => StartPeriod <= period && (EndPeriod is null || period <= EndPeriod);
+
+    /// <summary>Versión vigente en el mes: la de mayor <c>EffectiveFrom</c> que no lo supere.</summary>
+    public RecurringVersion VersionIn(Period period) =>
+        _versions.Where(v => v.EffectiveFrom <= period).MaxBy(v => v.EffectiveFrom)
+        ?? throw new InvalidOperationException($"El gasto {Id} no tiene una versión vigente en {period}.");
+
+    /// <summary>Registro propio del mes, si lo tiene.</summary>
+    public RecurringInstance? InstanceIn(Period period) => _instances.SingleOrDefault(i => i.Period == period);
+
+    internal void AddVersion(RecurringVersion version) => _versions.Add(version);
+
+    internal void AddInstance(RecurringInstance instance) => _instances.Add(instance);
 }

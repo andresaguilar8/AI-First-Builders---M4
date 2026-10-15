@@ -47,4 +47,29 @@ public sealed class RecurringVersion
 
     /// <summary>Día del mes en que vence (1–31); <c>null</c> = sin vencimiento (RF-07).</summary>
     public int? DueDay { get; private set; }
+
+    /// <summary>Versión con los valores dados, vigente desde el mes; el vencimiento se guarda como día del mes.</summary>
+    public static RecurringVersion From(Period effectiveFrom, ExpenseValues values) => new(
+        Guid.CreateVersion7(),
+        effectiveFrom,
+        values.Name,
+        values.Description,
+        values.Amount,
+        values.CategoryId,
+        values.DueDate?.Day);
+
+    /// <summary>
+    /// Valores proyectados en un mes: el vencimiento cae en el día <see cref="DueDay"/> o en el último
+    /// día del mes si este es más corto (RF-07).
+    /// </summary>
+    public ExpenseValues ProjectTo(Period period) => new()
+    {
+        Name = Name,
+        Description = Description,
+        Amount = Amount,
+        CategoryId = CategoryId,
+        DueDate = DueDay is { } day
+            ? new DateOnly(period.Year, period.Month, Math.Min(day, period.LastDay.Day))
+            : null,
+    };
 }
