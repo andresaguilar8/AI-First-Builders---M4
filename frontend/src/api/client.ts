@@ -25,7 +25,8 @@ export class ValidationError extends ApiError {
 }
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const response = await fetch(path, {
+  // URL absoluta del mismo origen: el fetch de Node (tests) no acepta rutas relativas.
+  const response = await fetch(new URL(path, window.location.origin), {
     method,
     credentials: 'same-origin',
     headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },

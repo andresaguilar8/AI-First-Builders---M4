@@ -53,3 +53,15 @@ button {
   font: inherit;
   max-width: 100%;
 }
+
+.login form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 24rem;
+}
+
+.form-error {
+  color: var(--color-danger);
+  margin: 0;
+}
