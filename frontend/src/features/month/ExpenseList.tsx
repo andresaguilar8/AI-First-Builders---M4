@@ -1,6 +1,7 @@
 import type { DueStatus, MonthExpense } from '../../api/types'
 import { formatArs } from '../../lib/amount'
 import { formatDate } from '../../lib/dates'
+import { ExpenseActions } from '../expenses/ExpenseActions'
 import { PayButton } from '../payments/PayButton'
 
 const statusLabels: Record<Exclude<DueStatus, 'Pagado'>, string> = {
@@ -54,6 +55,7 @@ export function ExpenseList({ period, today, expenses, onEdit }: ExpenseListProp
             >
               Editar
             </button>
+            <ExpenseActions period={period} expense={expense} />
           </div>
         </li>
       ))}
