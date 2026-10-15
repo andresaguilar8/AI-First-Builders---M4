@@ -50,6 +50,8 @@ public sealed class RecurringExpense : Expense
             throw new InvalidOperationException($"El gasto {Id} no aparece en {period}.");
     }
 
+    internal void EndAt(Period endPeriod) => EndPeriod = endPeriod;
+
     internal void AddVersion(RecurringVersion version) => _versions.Add(version);
 
     internal void RemoveVersion(RecurringVersion version) => _versions.Remove(version);
