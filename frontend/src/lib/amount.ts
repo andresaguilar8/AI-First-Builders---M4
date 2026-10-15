@@ -27,3 +27,13 @@ export function parseArsAmount(input: string): string | null {
 export function formatArs(amount: string): string {
   return arsFormatter.format(Number(amount))
 }
+
+/**
+ * Muestra un monto de la API (`1234.56`) como se escribe en el formulario (`1.234,56`); sin
+ * decimales si son cero (`15000.00` → `15.000`). Se arma como texto para no perder precisión.
+ */
+export function toArsInput(amount: string): string {
+  const [integer, decimals = ''] = amount.split('.')
+  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return /^0*$/.test(decimals) ? grouped : `${grouped},${decimals.padEnd(2, '0')}`
+}

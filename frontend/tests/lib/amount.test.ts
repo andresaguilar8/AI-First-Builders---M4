@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatArs, parseArsAmount } from '../../src/lib/amount'
+import { formatArs, parseArsAmount, toArsInput } from '../../src/lib/amount'
 
 describe('parseArsAmount', () => {
   it('AC-06: convierte 1.234,56 al formato de la API', () => {
@@ -44,5 +44,17 @@ describe('formatArs', () => {
 
   it('formatea el monto máximo sin perder centavos', () => {
     expect(formatArs('999999999999.99')).toBe('$ 999.999.999.999,99')
+  })
+})
+
+describe('toArsInput', () => {
+  it.each([
+    ['1234.56', '1.234,56'],
+    ['15000.00', '15.000'],
+    ['0.50', '0,50'],
+    ['999999999999.99', '999.999.999.999,99'],
+  ])('muestra %s para editar como %s y vuelve a leerse igual', (amount, expected) => {
+    expect(toArsInput(amount)).toBe(expected)
+    expect(parseArsAmount(toArsInput(amount))).toBe(Number(amount).toFixed(2))
   })
 })

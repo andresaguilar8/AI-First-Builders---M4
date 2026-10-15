@@ -141,3 +141,32 @@ button {
   display: flex;
   gap: 0.5rem;
 }
+
+.expense--recurring {
+  border-left: 4px solid var(--color-accent);
+}
+
+.expense-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dialog {
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-bg);
+  box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 15%);
+}
+
+.dialog h3 {
+  margin-top: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

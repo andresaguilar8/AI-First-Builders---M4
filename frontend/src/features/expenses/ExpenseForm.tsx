@@ -1,32 +1,53 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { api, ValidationError } from '../../api/client'
-import type { CreateExpenseRequest, ExpenseKind, FieldErrors, MonthExpense } from '../../api/types'
-import { parseArsAmount } from '../../lib/amount'
+import type {
+  CreateExpenseRequest,
+  EditScope,
+  ExpenseKind,
+  ExpenseValues,
+  FieldErrors,
+  MonthExpense,
+  UpdateExpenseRequest,
+} from '../../api/types'
+import { parseArsAmount, toArsInput } from '../../lib/amount'
 import { monthQueryKey } from '../month/monthQuery'
+import { EditScopeDialog } from './EditScopeDialog'
 
 const NAME_MAX_LENGTH = 100
 const DESCRIPTION_MAX_LENGTH = 500
 
+type SaveRequest =
+  { mode: 'create'; body: CreateExpenseRequest } | { mode: 'update'; body: UpdateExpenseRequest }
+
 interface ExpenseFormProps {
-  /** Mes visualizado: el gasto se crea en él (RF-02). */
+  /** Mes visualizado: el gasto se crea o se edita en él (RF-02, RF-09). */
   period: string
+  /** Gasto a editar; sin él, el formulario da de alta uno nuevo. */
+  expense?: MonthExpense
   onDone: () => void
 }
 
-/** Alta de un gasto puntual o recurrente en el mes visualizado (RF-01 a RF-05). */
-export function ExpenseForm({ period, onDone }: ExpenseFormProps) {
+/**
+ * Alta de un gasto puntual o recurrente en el mes visualizado (RF-01 a RF-05) y edición de un gasto
+ * del mes; un recurrente pide antes el alcance del cambio (RF-09, RF-10).
+ */
+export function ExpenseForm({ period, expense, onDone }: ExpenseFormProps) {
   const queryClient = useQueryClient()
-  const [name, setName] = useState('')
-  const [amount, setAmount] = useState('')
-  const [description, setDescription] = useState('')
-  const [dueDate, setDueDate] = useState('')
+  const [name, setName] = useState(expense?.name ?? '')
+  const [amount, setAmount] = useState(expense ? toArsInput(expense.amount) : '')
+  const [description, setDescription] = useState(expense?.description ?? '')
+  const [dueDate, setDueDate] = useState(expense?.dueDate ?? '')
   const [kind, setKind] = useState<ExpenseKind>('OneOff')
   const [errors, setErrors] = useState<FieldErrors>({})
+  /** Valores listos para guardar un recurrente mientras se elige el alcance. */
+  const [pendingScope, setPendingScope] = useState<ExpenseValues | null>(null)
 
-  const create = useMutation({
-    mutationFn: (request: CreateExpenseRequest) =>
-      api.post<MonthExpense>(`/api/periods/${period}/expenses`, request),
+  const save = useMutation({
+    mutationFn: (request: SaveRequest) =>
+      request.mode === 'create'
+        ? api.post<MonthExpense>(`/api/periods/${period}/expenses`, request.body)
+        : api.put<MonthExpense>(`/api/periods/${period}/expenses/${expense?.id}`, request.body),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: monthQueryKey(period) })
       onDone()
@@ -59,14 +80,23 @@ export function ExpenseForm({ period, onDone }: ExpenseFormProps) {
     setErrors(localErrors)
     if (Object.keys(localErrors).length > 0 || !parsedAmount) return
 
-    create.mutate({
+    const values: ExpenseValues = {
       name: trimmedName,
       amount: parsedAmount,
       description: description.trim() || null,
-      categoryId: null,
+      categoryId: expense?.category?.id ?? null,
       dueDate: dueDate || null,
-      kind,
-    })
+    }
+
+    if (!expense) save.mutate({ mode: 'create', body: { ...values, kind } })
+    else if (expense.kind === 'Recurring') setPendingScope(values)
+    else save.mutate({ mode: 'update', body: values })
+  }
+
+  const saveWithScope = (scope: EditScope) => {
+    if (!pendingScope) return
+    save.mutate({ mode: 'update', body: { ...pendingScope, scope } })
+    setPendingScope(null)
   }
 
   const otherErrors = Object.entries(errors)
@@ -114,43 +144,49 @@ export function ExpenseForm({ period, onDone }: ExpenseFormProps) {
       />
       <FieldError messages={errors.dueDate} />
 
-      <fieldset>
-        <legend>Tipo</legend>
-        <label>
-          <input
-            type="radio"
-            name="expense-kind"
-            checked={kind === 'OneOff'}
-            onChange={() => setKind('OneOff')}
-          />
-          Puntual
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="expense-kind"
-            checked={kind === 'Recurring'}
-            onChange={() => setKind('Recurring')}
-          />
-          Recurrente
-        </label>
-      </fieldset>
+      {!expense && (
+        <fieldset>
+          <legend>Tipo</legend>
+          <label>
+            <input
+              type="radio"
+              name="expense-kind"
+              checked={kind === 'OneOff'}
+              onChange={() => setKind('OneOff')}
+            />
+            Puntual
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="expense-kind"
+              checked={kind === 'Recurring'}
+              onChange={() => setKind('Recurring')}
+            />
+            Recurrente
+          </label>
+        </fieldset>
+      )}
 
       {otherErrors.length > 0 && <FieldError messages={otherErrors} />}
-      {create.isError && !(create.error instanceof ValidationError) && (
+      {save.isError && !(save.error instanceof ValidationError) && (
         <p role="alert" className="form-error">
           No se pudo guardar el gasto. Probá de nuevo.
         </p>
       )}
 
       <div className="form-actions">
-        <button type="submit" disabled={create.isPending}>
+        <button type="submit" disabled={save.isPending || pendingScope !== null}>
           Guardar
         </button>
         <button type="button" onClick={onDone}>
           Cancelar
         </button>
       </div>
+
+      {pendingScope && (
+        <EditScopeDialog onChoose={saveWithScope} onCancel={() => setPendingScope(null)} />
+      )}
     </form>
   )
 }

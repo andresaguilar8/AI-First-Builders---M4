@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import type { MonthExpense } from '../../api/types'
 import { periodOf } from '../../lib/dates'
 import { ExpenseForm } from '../expenses/ExpenseForm'
 import { ExpenseList } from './ExpenseList'
@@ -15,11 +16,12 @@ function browserPeriod() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 }
 
-/** Vista principal: gastos del mes visualizado y alta de gastos (RF-01, RF-34, RF-35). */
+/** Vista principal: gastos del mes visualizado, alta y edición (RF-01, RF-09, RF-34, RF-35). */
 export function MonthPage() {
   const [firstRequest] = useState(browserPeriod)
   const [period, setPeriod] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
+  const [editing, setEditing] = useState<MonthExpense | null>(null)
 
   const initial = useQuery({
     queryKey: monthQueryKey(firstRequest),
@@ -34,9 +36,19 @@ export function MonthPage() {
     enabled: period !== null,
   })
 
-  const changePeriod = (next: string) => {
+  const closeForm = () => {
     setAdding(false)
+    setEditing(null)
+  }
+
+  const changePeriod = (next: string) => {
+    closeForm()
     setPeriod(next)
+  }
+
+  const startEditing = (expense: MonthExpense) => {
+    setAdding(false)
+    setEditing(expense)
   }
 
   const failed = initial.isError || month.isError
@@ -55,14 +67,19 @@ export function MonthPage() {
 
       {period && month.data && (
         <>
-          {adding ? (
-            <ExpenseForm period={period} onDone={() => setAdding(false)} />
+          {adding || editing ? (
+            <ExpenseForm
+              key={editing?.id ?? 'new'}
+              period={period}
+              expense={editing ?? undefined}
+              onDone={closeForm}
+            />
           ) : (
             <button type="button" onClick={() => setAdding(true)}>
               Agregar gasto
             </button>
           )}
-          <ExpenseList expenses={month.data.expenses} />
+          <ExpenseList expenses={month.data.expenses} onEdit={startEditing} />
         </>
       )}
     </main>
