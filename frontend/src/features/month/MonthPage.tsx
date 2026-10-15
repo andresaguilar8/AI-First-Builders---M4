@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { MonthExpense } from '../../api/types'
 import { periodOf } from '../../lib/dates'
 import { ExpenseForm } from '../expenses/ExpenseForm'
+import { DueTodayAlert } from './DueTodayAlert'
 import { ExpenseList } from './ExpenseList'
 import { MonthNavigator } from './MonthNavigator'
 import { fetchMonth, monthQueryKey } from './monthQuery'
@@ -56,6 +57,7 @@ export function MonthPage() {
   return (
     <main className="month">
       <h1>Gastos del mes</h1>
+      <DueTodayAlert />
       {period && <MonthNavigator period={period} onChange={changePeriod} />}
 
       {failed && (
@@ -79,7 +81,12 @@ export function MonthPage() {
               Agregar gasto
             </button>
           )}
-          <ExpenseList expenses={month.data.expenses} onEdit={startEditing} />
+          <ExpenseList
+            period={period}
+            today={month.data.today}
+            expenses={month.data.expenses}
+            onEdit={startEditing}
+          />
         </>
       )}
     </main>

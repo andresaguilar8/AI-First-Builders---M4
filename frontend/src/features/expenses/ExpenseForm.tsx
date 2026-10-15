@@ -11,7 +11,7 @@ import type {
   UpdateExpenseRequest,
 } from '../../api/types'
 import { parseArsAmount, toArsInput } from '../../lib/amount'
-import { monthQueryKey } from '../month/monthQuery'
+import { invalidateAfterChange } from '../month/monthQuery'
 import { EditScopeDialog } from './EditScopeDialog'
 
 const NAME_MAX_LENGTH = 100
@@ -49,7 +49,7 @@ export function ExpenseForm({ period, expense, onDone }: ExpenseFormProps) {
         ? api.post<MonthExpense>(`/api/periods/${period}/expenses`, request.body)
         : api.put<MonthExpense>(`/api/periods/${period}/expenses/${expense?.id}`, request.body),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: monthQueryKey(period) })
+      await invalidateAfterChange(queryClient, period)
       onDone()
     },
     onError: (error) => {
