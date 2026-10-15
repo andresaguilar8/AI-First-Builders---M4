@@ -239,13 +239,13 @@ formato según [contracts/csv-export.md](contracts/csv-export.md).
 
 ### Tests for User Story 7 ⚠️ (escribir primero, deben fallar)
 
-- [ ] T080 [P] [US7] Tests de dominio en `backend/tests/GestorGastos.Domain.Tests/Export/CsvExportBuilderTests.cs`: hoy 05/10/2026 con un puntual en agosto y un recurrente desde agosto sin instancias → 4 filas (`2026-08` ×2, `2026-09`, `2026-10`) y ninguna de `2026-11` (AC-58); fila exacta `2026-10,"Luz, gas",1234.56,Sin categoría,2026-10-10,Pendiente,` (AC-59); sin gastos → solo encabezado; orden por período, luego vencimiento (vacíos al final), luego nombre (RF-39); comillas internas duplicadas
-- [ ] T081 [P] [US7] Test de integración en `backend/tests/GestorGastos.Api.Tests/Export/ExportEndpointTests.cs`: `GET /api/export.csv` devuelve `text/csv; charset=utf-8`, empieza con los bytes `EF BB BF`, usa `\r\n` y tiene `Content-Disposition` de descarga (AC-59)
+- [X] T080 [P] [US7] Tests de dominio en `backend/tests/GestorGastos.Domain.Tests/Export/CsvExportBuilderTests.cs`: hoy 05/10/2026 con un puntual en agosto y un recurrente desde agosto sin instancias → 4 filas (`2026-08` ×2, `2026-09`, `2026-10`) y ninguna de `2026-11` (AC-58); fila exacta `2026-10,"Luz, gas",1234.56,Sin categoría,2026-10-10,Pendiente,` (AC-59); sin gastos → solo encabezado; orden por período, luego vencimiento (vacíos al final), luego nombre (RF-39); comillas internas duplicadas
+- [X] T081 [P] [US7] Test de integración en `backend/tests/GestorGastos.Api.Tests/Export/ExportEndpointTests.cs`: `GET /api/export.csv` devuelve `text/csv; charset=utf-8`, empieza con los bytes `EF BB BF`, usa `\r\n` y tiene `Content-Disposition` de descarga (AC-59)
 
 ### Implementation for User Story 7
 
-- [ ] T082 [US7] Implementar `CsvExportBuilder` en `backend/src/GestorGastos.Domain/Export/CsvExportBuilder.cs`: recorre desde el primer período con gastos hasta `CurrentPeriod` usando `MonthProjector`; escapa según RFC 4180; formatos de [contracts/csv-export.md](contracts/csv-export.md) (RF-38, RF-39, RNF-07)
-- [ ] T083 [US7] Implementar `GET /api/export.csv` en `backend/src/GestorGastos.Api/Endpoints/ExportEndpoints.cs` (carga todos los gastos con versiones e instancias en memoria, escribe UTF-8 con BOM) (RF-38, RF-39)
+- [X] T082 [US7] Implementar `CsvExportBuilder` en `backend/src/GestorGastos.Domain/Export/CsvExportBuilder.cs`: recorre desde el primer período con gastos hasta `CurrentPeriod` usando `MonthProjector`; escapa según RFC 4180; formatos de [contracts/csv-export.md](contracts/csv-export.md) (RF-38, RF-39, RNF-07)
+- [X] T083 [US7] Implementar `GET /api/export.csv` en `backend/src/GestorGastos.Api/Endpoints/ExportEndpoints.cs` (carga todos los gastos con versiones e instancias en memoria, escribe UTF-8 con BOM) (RF-38, RF-39)
 - [ ] T084 [P] [US7] Implementar `frontend/src/features/export/ExportButton.tsx` (descarga de `/api/export.csv`) en la vista del mes, con test en `frontend/tests/features/export/ExportButton.test.tsx` (RF-38)
 
 **Checkpoint**: todas las historias funcionan de forma independiente.
