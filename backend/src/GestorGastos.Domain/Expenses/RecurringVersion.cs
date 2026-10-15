@@ -68,8 +68,33 @@ public sealed class RecurringVersion
         Description = Description,
         Amount = Amount,
         CategoryId = CategoryId,
-        DueDate = DueDay is { } day
-            ? new DateOnly(period.Year, period.Month, Math.Min(day, period.LastDay.Day))
-            : null,
+        DueDate = DueDay is { } day ? period.DayOrLast(day) : null,
     };
+
+    /// <summary>Copia de esta versión vigente desde otro mes.</summary>
+    internal RecurringVersion CopyFrom(Period effectiveFrom) =>
+        new(Guid.CreateVersion7(), effectiveFrom, Name, Description, Amount, CategoryId, DueDay);
+
+    /// <summary>Aplica solo los campos que cambiaron; el vencimiento se guarda como día del mes.</summary>
+    internal void Apply(ExpenseChanges changes)
+    {
+        var after = changes.After;
+        if (changes.Name)
+            Name = after.Name;
+        if (changes.Description)
+            Description = after.Description;
+        if (changes.Amount)
+            Amount = after.Amount;
+        if (changes.CategoryId)
+            CategoryId = after.CategoryId;
+        if (changes.DueDate)
+            DueDay = after.DueDate?.Day;
+    }
+
+    internal bool HasSameValuesAs(RecurringVersion other) =>
+        Name == other.Name
+        && Description == other.Description
+        && Amount == other.Amount
+        && CategoryId == other.CategoryId
+        && DueDay == other.DueDay;
 }

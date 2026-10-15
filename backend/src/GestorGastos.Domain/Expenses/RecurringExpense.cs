@@ -43,7 +43,18 @@ public sealed class RecurringExpense : Expense
     /// <summary>Registro propio del mes, si lo tiene.</summary>
     public RecurringInstance? InstanceIn(Period period) => _instances.SingleOrDefault(i => i.Period == period);
 
+    /// <summary>Las operaciones solo valen sobre un mes en que el gasto aparece (RF-09).</summary>
+    internal void EnsureActiveIn(Period period)
+    {
+        if (!IsActiveIn(period))
+            throw new InvalidOperationException($"El gasto {Id} no aparece en {period}.");
+    }
+
     internal void AddVersion(RecurringVersion version) => _versions.Add(version);
 
+    internal void RemoveVersion(RecurringVersion version) => _versions.Remove(version);
+
     internal void AddInstance(RecurringInstance instance) => _instances.Add(instance);
+
+    internal void RemoveInstance(RecurringInstance instance) => _instances.Remove(instance);
 }

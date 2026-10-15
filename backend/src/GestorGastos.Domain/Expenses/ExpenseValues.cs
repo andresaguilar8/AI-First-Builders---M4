@@ -10,6 +10,8 @@ public sealed record ExpenseValues
     public const int NameMaxLength = 100;
     public const int DescriptionMaxLength = 500;
 
+    private const string DueDateBeforePeriod = "El vencimiento no puede ser anterior al mes del gasto.";
+
     public required string Name { get; init; }
 
     public string? Description { get; init; }
@@ -48,7 +50,7 @@ public sealed record ExpenseValues
             errors["amount"] = ["El monto es obligatorio."];
 
         if (dueDate < period.FirstDay)
-            errors["dueDate"] = ["El vencimiento no puede ser anterior al mes del gasto."];
+            errors["dueDate"] = [DueDateBeforePeriod];
 
         if (errors.Count > 0)
             throw new DomainValidationException(errors);
@@ -61,5 +63,12 @@ public sealed record ExpenseValues
             CategoryId = categoryId,
             DueDate = dueDate,
         };
+    }
+
+    /// <summary>El vencimiento debe caer en el mes del gasto o en uno posterior (RF-05).</summary>
+    internal static void EnsureDueDateIn(DateOnly? dueDate, Period period)
+    {
+        if (dueDate < period.FirstDay)
+            throw new DomainValidationException("dueDate", DueDateBeforePeriod);
     }
 }

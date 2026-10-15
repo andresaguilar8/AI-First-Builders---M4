@@ -52,4 +52,35 @@ public sealed class RecurringInstance
         CategoryId = CategoryId,
         DueDate = DueDate,
     };
+
+    /// <summary>Reemplaza los valores del mes; el pago se conserva (RF-09).</summary>
+    internal void Update(ExpenseValues values)
+    {
+        Name = values.Name;
+        Description = values.Description;
+        Amount = values.Amount;
+        CategoryId = values.CategoryId;
+        DueDate = values.DueDate;
+    }
+
+    /// <summary>
+    /// Aplica solo los campos que cambiaron en una edición hecha en un mes anterior; el vencimiento
+    /// toma el nuevo día dentro de este mes (RF-07, RF-11).
+    /// </summary>
+    internal void Apply(ExpenseChanges changes)
+    {
+        var after = changes.After;
+        if (changes.Name)
+            Name = after.Name;
+        if (changes.Description)
+            Description = after.Description;
+        if (changes.Amount)
+            Amount = after.Amount;
+        if (changes.CategoryId)
+            CategoryId = after.CategoryId;
+        if (changes.DueDate)
+            DueDate = after.DueDate is { } date ? Period.DayOrLast(date.Day) : null;
+    }
+
+    internal void SetPaidOn(DateOnly? paidOn) => PaidOn = paidOn;
 }

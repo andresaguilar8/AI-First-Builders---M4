@@ -46,4 +46,18 @@ public sealed class OneOffExpense : Expense
         CategoryId = CategoryId,
         DueDate = DueDate,
     };
+
+    /// <summary>Reemplaza los valores; el pago se conserva (RF-05, RF-09).</summary>
+    public void Update(ExpenseValues values)
+    {
+        ExpenseValues.EnsureDueDateIn(values.DueDate, Period);
+
+        Name = values.Name;
+        Description = values.Description;
+        Amount = values.Amount;
+        CategoryId = values.CategoryId;
+        DueDate = values.DueDate;
+    }
+
+    internal void SetPaidOn(DateOnly? paidOn) => PaidOn = paidOn;
 }

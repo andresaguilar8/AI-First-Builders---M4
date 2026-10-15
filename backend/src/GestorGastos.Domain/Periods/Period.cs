@@ -48,6 +48,9 @@ public readonly record struct Period : IComparable<Period>
 
     public Period Previous() => FromDate(FirstDay.AddMonths(-1));
 
+    /// <summary>El día indicado del mes o, si el mes es más corto, su último día (RF-07).</summary>
+    public DateOnly DayOrLast(int day) => new(Year, Month, Math.Min(day, LastDay.Day));
+
     public bool Contains(DateOnly date) => date.Year == Year && date.Month == Month;
 
     public int CompareTo(Period other) => (Year, Month).CompareTo((other.Year, other.Month));
