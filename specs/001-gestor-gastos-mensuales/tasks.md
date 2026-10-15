@@ -261,7 +261,7 @@ formato según [contracts/csv-export.md](contracts/csv-export.md).
 - [X] T087 [P] Revisar todas las vistas a 360 px de ancho sin scroll horizontal ni superposición en `frontend/src/styles.css` y componentes (RNF-02, SC-004)
 - [X] T089 Verificar trazabilidad: script `backend/tests/check-ac-coverage.sh` que lista los AC-01 a AC-68 sin al menos un test que los referencie (traits del backend y nombres de tests del frontend) y falla si falta alguno (SC-006, principio I)
 - [X] T090 Ejecutar `dotnet test` en `backend/` (más la corrida explícita de rendimiento, `dotnet test -- --explicit only`) y `pnpm test` en `frontend/` y dejar todo en verde (quality gate de la constitución) (quality gate, sin RF)
-- [ ] T091 Ejecutar la validación manual de [quickstart.md](quickstart.md) completa (pasos 1 a 11 y verificación con curl), verificar cada vista (login, mes con gastos, categorías y los diálogos de edición y pago) a 360 px en DevTools sin scroll horizontal ni superposición (RNF-02, SC-004), verificar que la app se instala en Chrome y Edge de escritorio y en Chrome Android (o su emulación) y que se usa completa desde el navegador en Firefox y Safari de macOS (RNF-03), y corregir lo que falle (quality gate)
+- [X] T091 Ejecutar la validación manual de [quickstart.md](quickstart.md) completa (pasos 1 a 11 y verificación con curl), verificar cada vista (login, mes con gastos, categorías y los diálogos de edición y pago) a 360 px en DevTools sin scroll horizontal ni superposición (RNF-02, SC-004), verificar que la app se instala en Chrome y Edge de escritorio y en Chrome Android (o su emulación) y que se usa completa desde el navegador en Firefox y Safari de macOS (RNF-03), y corregir lo que falle (quality gate)
 
 ---
 
