@@ -1,17 +1,21 @@
 using GestorGastos.Api.Contracts;
+using System.Globalization;
 using GestorGastos.Api.Data;
+using GestorGastos.Domain.Categories;
 using GestorGastos.Domain.DueStatus;
 using GestorGastos.Domain.Expenses;
 using GestorGastos.Domain.Periods;
+using GestorGastos.Domain.Summary;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestorGastos.Api.Services;
 
-/// <summary>Gastos de un mes con su estado de vencimiento (RF-33, RF-34), en pocas consultas indexadas (R-14).</summary>
+/// <summary>
+/// Gastos de un mes con su estado de vencimiento, totales y resumen por categoría (RF-23 a RF-26,
+/// RF-33, RF-34), en pocas consultas indexadas; los totales se calculan en memoria (R-14).
+/// </summary>
 public sealed class MonthQueryService(AppDbContext db, IBusinessCalendar calendar)
 {
-    private const string Zero = "0.00";
-
     public async Task<MonthViewDto> GetAsync(Period period, CancellationToken ct)
     {
         var oneOffs = await db.OneOffExpenses.AsNoTracking()
@@ -29,15 +33,28 @@ public sealed class MonthQueryService(AppDbContext db, IBusinessCalendar calenda
         var effective = MonthProjector.Project(period, [.. oneOffs, .. recurring]);
         var categories = await LoadCategoriesAsync(effective, ct);
         var today = calendar.Today;
+        var summary = MonthSummary.Calculate(effective);
 
         return new MonthViewDto(
             period.ToString(),
             today,
             [.. effective.Select(e => ToDto(e, categories, today))],
-            Zero,
-            Zero,
-            []);
+            FormatAmount(summary.Total),
+            FormatAmount(summary.PendingTotal),
+            ToCategoryTotals(summary, categories));
     }
+
+    /// <summary>Categorías por nombre y "Sin categoría" al final.</summary>
+    private static List<CategoryTotalDto> ToCategoryTotals(MonthSummary summary, Dictionary<Guid, string> categories) =>
+        [.. summary.ByCategory
+            .Select(c => new CategoryTotalDto(
+                c.CategoryId,
+                c.CategoryId is { } id ? categories.GetValueOrDefault(id, CategoryName.Uncategorized) : CategoryName.Uncategorized,
+                FormatAmount(c.Total)))
+            .OrderBy(c => c.CategoryId is null)
+            .ThenBy(c => c.CategoryName, StringComparer.CurrentCultureIgnoreCase)];
+
+    private static string FormatAmount(decimal value) => value.ToString("0.00", CultureInfo.InvariantCulture);
 
     /// <summary>Un gasto del mes con su categoría y su estado, listo para la respuesta.</summary>
     public async Task<MonthExpenseDto> ToDtoAsync(EffectiveExpense expense, CancellationToken ct) =>
