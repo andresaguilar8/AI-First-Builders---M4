@@ -46,6 +46,7 @@ api.MapPeriodEndpoints();
 api.MapExpenseEndpoints();
 api.MapPaymentEndpoints();
 api.MapAlertEndpoints();
+api.MapCategoryEndpoints();
 
 // Rutas de /api inexistentes: 401 sin sesión (no se pueden descubrir rutas) y 404 con sesión,
 // p. ej. /api/auth/register (RF-37).
