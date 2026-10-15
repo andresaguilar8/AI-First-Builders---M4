@@ -1,10 +1,10 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
 import type { CreateExpenseRequest, MonthExpense } from '../../../src/api/types'
 import { server } from '../../msw/server'
-import { monthExpense, monthHandler, withSession } from '../../msw/month'
+import { categoryHandlers, monthExpense, monthHandler, withSession } from '../../msw/month'
 import { renderApp } from '../../renderApp'
 
 /** Registra los POST de alta y responde 201 agregando el gasto al mes. */
@@ -121,5 +121,32 @@ describe('ExpenseForm', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
 
     expect(await screen.findByText('Nombre rechazado.')).toBeInTheDocument()
+  })
+
+  it('AC-31: permite asociar una categoría existente al gasto', async () => {
+    const services = { id: crypto.randomUUID(), name: 'Servicios' }
+    const expenses: Record<string, MonthExpense[]> = {}
+    const create = createHandler(expenses)
+    server.use(
+      withSession,
+      monthHandler('2026-10-05', expenses).handler,
+      create.handler,
+      ...categoryHandlers([services]).handlers,
+    )
+    renderApp('/')
+    const user = await openForm()
+
+    await user.type(screen.getByLabelText('Nombre'), 'Luz')
+    await user.type(screen.getByLabelText('Monto'), '100')
+    const select = screen.getByLabelText('Categoría (opcional)')
+    expect(within(select).getByRole('option', { name: 'Sin categoría' })).toBeInTheDocument()
+    await user.selectOptions(
+      select,
+      await within(select).findByRole('option', { name: 'Servicios' }),
+    )
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    await screen.findByText('Luz')
+    expect(create.posted[0].categoryId).toBe(services.id)
   })
 })

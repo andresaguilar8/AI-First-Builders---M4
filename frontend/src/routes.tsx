@@ -1,6 +1,7 @@
 import { Navigate, type RouteObject } from 'react-router'
 import { LoginPage } from './features/auth/LoginPage'
 import { RequireAuth } from './features/auth/RequireAuth'
+import { CategoriesPage } from './features/categories/CategoriesPage'
 import { MonthPage } from './features/month/MonthPage'
 
 export const routes: RouteObject[] = [
@@ -8,9 +9,8 @@ export const routes: RouteObject[] = [
   {
     element: <RequireAuth />,
     children: [
-      // La vista de categorías llega con US6.
       { path: '/', element: <MonthPage /> },
-      { path: '/categorias', element: <h1>Categorías</h1> },
+      { path: '/categorias', element: <CategoriesPage /> },
     ],
   },
   // Cualquier otra ruta (p. ej. /registro, que no existe: RF-37) vuelve al inicio.

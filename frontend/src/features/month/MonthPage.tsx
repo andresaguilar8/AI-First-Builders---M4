@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { Link } from 'react-router'
 import type { MonthExpense } from '../../api/types'
 import { periodOf } from '../../lib/dates'
 import { ExpenseForm } from '../expenses/ExpenseForm'
+import { CategorySummary } from './CategorySummary'
 import { DueTodayAlert } from './DueTodayAlert'
 import { ExpenseList } from './ExpenseList'
 import { MonthNavigator } from './MonthNavigator'
+import { Totals } from './Totals'
 import { fetchMonth, monthQueryKey } from './monthQuery'
 
 /**
@@ -56,6 +59,9 @@ export function MonthPage() {
 
   return (
     <main className="month">
+      <nav className="page-nav">
+        <Link to="/categorias">Categorías</Link>
+      </nav>
       <h1>Gastos del mes</h1>
       <DueTodayAlert />
       {period && <MonthNavigator period={period} onChange={changePeriod} />}
@@ -69,6 +75,8 @@ export function MonthPage() {
 
       {period && month.data && (
         <>
+          <Totals total={month.data.total} pendingTotal={month.data.pendingTotal} />
+          <CategorySummary byCategory={month.data.byCategory} />
           {adding || editing ? (
             <ExpenseForm
               key={editing?.id ?? 'new'}

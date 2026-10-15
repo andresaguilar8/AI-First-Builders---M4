@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { api, ValidationError } from '../../api/client'
 import type {
@@ -11,6 +11,7 @@ import type {
   UpdateExpenseRequest,
 } from '../../api/types'
 import { parseArsAmount, toArsInput } from '../../lib/amount'
+import { categoriesQueryKey, fetchCategories } from '../categories/categoryQuery'
 import { invalidateAfterChange } from '../month/monthQuery'
 import { EditScopeDialog } from './EditScopeDialog'
 
@@ -38,10 +39,13 @@ export function ExpenseForm({ period, expense, onDone }: ExpenseFormProps) {
   const [amount, setAmount] = useState(expense ? toArsInput(expense.amount) : '')
   const [description, setDescription] = useState(expense?.description ?? '')
   const [dueDate, setDueDate] = useState(expense?.dueDate ?? '')
+  const [categoryId, setCategoryId] = useState(expense?.category?.id ?? '')
   const [kind, setKind] = useState<ExpenseKind>('OneOff')
   const [errors, setErrors] = useState<FieldErrors>({})
   /** Valores listos para guardar un recurrente mientras se elige el alcance. */
   const [pendingScope, setPendingScope] = useState<ExpenseValues | null>(null)
+
+  const categories = useQuery({ queryKey: categoriesQueryKey, queryFn: fetchCategories })
 
   const save = useMutation({
     mutationFn: (request: SaveRequest) =>
@@ -84,7 +88,7 @@ export function ExpenseForm({ period, expense, onDone }: ExpenseFormProps) {
       name: trimmedName,
       amount: parsedAmount,
       description: description.trim() || null,
-      categoryId: expense?.category?.id ?? null,
+      categoryId: categoryId || null,
       dueDate: dueDate || null,
     }
 
@@ -100,7 +104,9 @@ export function ExpenseForm({ period, expense, onDone }: ExpenseFormProps) {
   }
 
   const otherErrors = Object.entries(errors)
-    .filter(([field]) => !['name', 'amount', 'description', 'dueDate'].includes(field))
+    .filter(
+      ([field]) => !['name', 'amount', 'description', 'categoryId', 'dueDate'].includes(field),
+    )
     .flatMap(([, messages]) => messages)
 
   return (
@@ -133,6 +139,21 @@ export function ExpenseForm({ period, expense, onDone }: ExpenseFormProps) {
         onChange={(event) => setDescription(event.target.value)}
       />
       <FieldError messages={errors.description} />
+
+      <label htmlFor="expense-category">Categoría (opcional)</label>
+      <select
+        id="expense-category"
+        value={categoryId}
+        onChange={(event) => setCategoryId(event.target.value)}
+      >
+        <option value="">Sin categoría</option>
+        {categories.data?.map((category) => (
+          <option key={category.id} value={category.id}>
+            {category.name}
+          </option>
+        ))}
+      </select>
+      <FieldError messages={errors.categoryId} />
 
       <label htmlFor="expense-due-date">Vencimiento (opcional)</label>
       <input

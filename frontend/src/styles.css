@@ -196,3 +196,74 @@ button {
   color: var(--color-danger);
   font-weight: 600;
 }
+
+.page-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space);
+}
+
+.page-nav a {
+  color: var(--color-accent);
+}
+
+.totals dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 1rem;
+  margin: var(--space) 0;
+}
+
+.totals dt {
+  color: var(--color-muted);
+}
+
+.totals dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.category-summary h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.category-summary ul,
+.category-list {
+  list-style: none;
+  margin: 0 0 var(--space);
+  padding: 0;
+}
+
+.category-summary li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.category-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: var(--space);
+}
+
+.inline-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.inline-field input {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.category {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+}

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import type { MonthExpense, MonthView } from '../../src/api/types'
+import type { Category, CategoryInput, MonthExpense, MonthView } from '../../src/api/types'
 
 export const withSession = http.get('/api/auth/me', () =>
   HttpResponse.json({ email: 'andres@test.local' }),
@@ -86,4 +86,38 @@ export function paymentHandlers(expenses: Record<string, MonthExpense[]>, today:
     }),
   ]
   return { handlers, calls }
+}
+
+/**
+ * ABM de categorías en memoria. Los nombres de `taken` (además de los existentes) y "Sin categoría"
+ * se rechazan con 409, comparados sin mayúsculas ni acentos como en el backend.
+ */
+export function categoryHandlers(initial: Category[] = []) {
+  let categories = [...initial]
+  const normalize = (name: string) =>
+    name.normalize('NFD').replace(/\p{M}/gu, '').trim().replace(/\s+/g, ' ').toLowerCase()
+  const conflicts = (name: string, exceptId?: string) =>
+    normalize(name) === 'sin categoria' ||
+    categories.some((c) => c.id !== exceptId && normalize(c.name) === normalize(name))
+  const handlers = [
+    http.get('/api/categories', () => HttpResponse.json(categories)),
+    http.post('/api/categories', async ({ request }) => {
+      const { name } = (await request.json()) as CategoryInput
+      if (conflicts(name)) return new HttpResponse(null, { status: 409 })
+      const created = { id: crypto.randomUUID(), name: name.trim() }
+      categories = [...categories, created]
+      return HttpResponse.json(created, { status: 201 })
+    }),
+    http.put('/api/categories/:id', async ({ params, request }) => {
+      const { name } = (await request.json()) as CategoryInput
+      if (conflicts(name, String(params.id))) return new HttpResponse(null, { status: 409 })
+      categories = categories.map((c) => (c.id === params.id ? { ...c, name: name.trim() } : c))
+      return HttpResponse.json(categories.find((c) => c.id === params.id))
+    }),
+    http.delete('/api/categories/:id', ({ params }) => {
+      categories = categories.filter((c) => c.id !== params.id)
+      return new HttpResponse(null, { status: 204 })
+    }),
+  ]
+  return { handlers, current: () => categories }
 }
