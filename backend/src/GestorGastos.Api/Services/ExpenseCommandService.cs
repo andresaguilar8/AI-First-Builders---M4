@@ -2,13 +2,14 @@ using GestorGastos.Api.Contracts;
 using GestorGastos.Api.Data;
 using GestorGastos.Domain.Common;
 using GestorGastos.Domain.Expenses;
+using GestorGastos.Domain.Payments;
 using GestorGastos.Domain.Periods;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestorGastos.Api.Services;
 
 /// <summary>Operaciones que modifican gastos en el mes visualizado.</summary>
-public sealed class ExpenseCommandService(AppDbContext db, TimeProvider time)
+public sealed class ExpenseCommandService(AppDbContext db, TimeProvider time, IBusinessCalendar calendar)
 {
     /// <summary>Crea un gasto puntual o recurrente en el mes (RF-01 a RF-05).</summary>
     public async Task<EffectiveExpense> CreateAsync(Period period, CreateExpenseRequest request, CancellationToken ct)
@@ -63,6 +64,32 @@ public sealed class ExpenseCommandService(AppDbContext db, TimeProvider time)
                 break;
         }
 
+        await db.SaveChangesAsync(ct);
+
+        return MonthProjector.EffectiveIn(expense, period);
+    }
+
+    /// <summary>Marca el gasto como pagado en el mes (RF-27 a RF-30); <c>null</c> si no aparece en él.</summary>
+    public async Task<EffectiveExpense?> MarkPaidAsync(Period period, Guid expenseId, DateOnly? paidOn, CancellationToken ct)
+    {
+        var expense = await FindInMonthAsync(period, expenseId, ct);
+        if (expense is null)
+            return null;
+
+        PaymentService.MarkPaid(expense, period, calendar.Today, paidOn);
+        await db.SaveChangesAsync(ct);
+
+        return MonthProjector.EffectiveIn(expense, period);
+    }
+
+    /// <summary>Desmarca el pago del mes (RF-31); <c>null</c> si el gasto no aparece en él.</summary>
+    public async Task<EffectiveExpense?> UnmarkPaidAsync(Period period, Guid expenseId, CancellationToken ct)
+    {
+        var expense = await FindInMonthAsync(period, expenseId, ct);
+        if (expense is null)
+            return null;
+
+        PaymentService.Unmark(expense, period);
         await db.SaveChangesAsync(ct);
 
         return MonthProjector.EffectiveIn(expense, period);

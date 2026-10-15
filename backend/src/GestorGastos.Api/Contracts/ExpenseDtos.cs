@@ -69,6 +69,11 @@ public sealed record UpdateExpenseRequest(
     EditScope? Scope)
     : ExpenseValuesRequest(Name, Description, Amount, CategoryId, DueDate);
 
+/// <summary>Fecha real de pago; solo se usa si el gasto está Vencido (RF-28, RF-29).</summary>
+public sealed record MarkPaidRequest(DateOnly? PaidOn);
+
+public sealed record DueTodayAlertDto(DateOnly Today, int Count);
+
 public sealed record CategoryRef(Guid Id, string Name);
 
 public sealed record MonthExpenseDto(

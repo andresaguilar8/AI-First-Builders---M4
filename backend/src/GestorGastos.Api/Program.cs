@@ -21,6 +21,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddScoped<MonthQueryService>();
 builder.Services.AddScoped<ExpenseCommandService>();
+builder.Services.AddScoped<DueTodayAlertService>();
 
 var app = builder.Build();
 
@@ -43,6 +44,8 @@ var api = app.MapGroup("/api").RequireAuthorization();
 api.MapAuthEndpoints();
 api.MapPeriodEndpoints();
 api.MapExpenseEndpoints();
+api.MapPaymentEndpoints();
+api.MapAlertEndpoints();
 
 // Rutas de /api inexistentes: 401 sin sesión (no se pueden descubrir rutas) y 404 con sesión,
 // p. ej. /api/auth/register (RF-37).
