@@ -12,6 +12,7 @@ public static class ExpenseEndpoints
         var expenses = api.MapGroup("/periods/{period}/expenses");
 
         expenses.MapPost("/", CreateAsync);
+        expenses.MapPut("/{expenseId:guid}", UpdateAsync);
 
         return api;
     }
@@ -25,5 +26,17 @@ public static class ExpenseEndpoints
     {
         var created = await commands.CreateAsync(period, request, ct);
         return TypedResults.Created((string?)null, await months.ToDtoAsync(created, ct));
+    }
+
+    private static async Task<IResult> UpdateAsync(
+        Period period,
+        Guid expenseId,
+        UpdateExpenseRequest request,
+        ExpenseCommandService commands,
+        MonthQueryService months,
+        CancellationToken ct)
+    {
+        var updated = await commands.UpdateAsync(period, expenseId, request, ct);
+        return updated is null ? TypedResults.NotFound() : TypedResults.Ok(await months.ToDtoAsync(updated, ct));
     }
 }

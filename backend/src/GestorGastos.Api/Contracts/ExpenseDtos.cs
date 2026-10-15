@@ -53,6 +53,22 @@ public sealed record CreateExpenseRequest(
     ExpenseKind? Kind)
     : ExpenseValuesRequest(Name, Description, Amount, CategoryId, DueDate);
 
+public enum EditScope
+{
+    ThisMonth,
+    ThisAndFollowing,
+}
+
+/// <summary>Edición de un gasto; <see cref="Scope"/> es obligatorio para recurrentes (RF-10).</summary>
+public sealed record UpdateExpenseRequest(
+    string? Name,
+    string? Description,
+    string? Amount,
+    Guid? CategoryId,
+    DateOnly? DueDate,
+    EditScope? Scope)
+    : ExpenseValuesRequest(Name, Description, Amount, CategoryId, DueDate);
+
 public sealed record CategoryRef(Guid Id, string Name);
 
 public sealed record MonthExpenseDto(
